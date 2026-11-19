@@ -49,6 +49,7 @@
 //     until someone with admin rights approves it there. The token asks for
 //     admin:read and admin:write; --scopes asks for others (admin:tokens to
 //     manage tokens, sync:pair to pair engines).
+//
 //   - WarpEngine Local, the engine on this machine, signs in with its token
 //     file (~/.warpengine/local-token). Without a URL, login goes there:
 //
@@ -56,6 +57,7 @@
 //
 //     The profile keeps no copy of the token: it reads the file on every
 //     run, so a reinstall does not break it. --local forces this way.
+//
 //   - With --token, a token you already have (made in the admin, or with
 //     "warp-engine token create") is checked and saved:
 //
@@ -119,7 +121,7 @@
 // answers for you, and without a terminal the command refuses to run
 // without it.
 //
-// SECTIONS
+// # SECTIONS
 //
 // # The softwares
 //

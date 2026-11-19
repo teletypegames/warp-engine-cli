@@ -51,6 +51,16 @@ type Router struct {
 	SoftwareController SoftwareControllerInterface
 	// RawController: api METHOD PATH.
 	RawController RawControllerInterface
+	// ReleaseController: release list|show|create|update|delete.
+	ReleaseController ReleaseControllerInterface
+	// ReleaseAssetController: asset list|show|create|update|delete.
+	ReleaseAssetController ReleaseAssetControllerInterface
+	// ExternalLinkController: link list|show|create|update|delete.
+	ExternalLinkController ExternalLinkControllerInterface
+	// SoftwareImageController: image list|show|create|upload|update|delete.
+	SoftwareImageController SoftwareImageControllerInterface
+	// ExtraController: extra show|update.
+	ExtraController ExtraControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -95,6 +105,21 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.RawController != nil {
 		r.raw(root)
+	}
+	if r.ReleaseController != nil {
+		r.release(root)
+	}
+	if r.ReleaseAssetController != nil {
+		r.releaseAsset(root)
+	}
+	if r.ExternalLinkController != nil {
+		r.externalLink(root)
+	}
+	if r.SoftwareImageController != nil {
+		r.softwareImage(root)
+	}
+	if r.ExtraController != nil {
+		r.extra(root)
 	}
 	return root
 }
