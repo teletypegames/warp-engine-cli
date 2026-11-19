@@ -16,6 +16,14 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		AuthController:     AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
 		ProfileController:  ProfileController{ProfileService: d.ProfileService},
 		SoftwareController: SoftwareController{SoftwareService: d.SoftwareService},
+		PipelineController: PipelineController{PipelineService: d.PipelineService},
+		FileController:     FileController{FileService: d.FileService},
+		RuntimeController:  RuntimeController{RuntimeService: d.RuntimeService},
+		LocalComponentController: LocalComponentController{
+			LocalComponentService: d.LocalComponentService,
+			LocalOperationService: d.LocalOperationService,
+		},
+		LocalOperationController: LocalOperationController{LocalOperationService: d.LocalOperationService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

@@ -49,6 +49,17 @@ type Router struct {
 	ProfileController ProfileControllerInterface
 	// SoftwareController: software list|show|create|update|delete|scaffold.
 	SoftwareController SoftwareControllerInterface
+	// PipelineController: pipeline list|show|update|sync|runs|trigger.
+	PipelineController PipelineControllerInterface
+	// FileController: file list|upload|rename|delete|mkdir.
+	FileController FileControllerInterface
+	// RuntimeController: runtime list|show|install.
+	RuntimeController RuntimeControllerInterface
+	// LocalComponentController: local components|enable|disable|remove|credentials|ci-setup|ci-teardown.
+	LocalComponentController LocalComponentControllerInterface
+	// LocalOperationController: local operation (added only with the
+	// LocalComponentController).
+	LocalOperationController LocalOperationControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -90,6 +101,18 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.SoftwareController != nil {
 		r.software(root)
+	}
+	if r.PipelineController != nil {
+		r.pipeline(root)
+	}
+	if r.FileController != nil {
+		r.file(root)
+	}
+	if r.RuntimeController != nil {
+		r.runtime(root)
+	}
+	if r.LocalComponentController != nil {
+		r.localComponent(root)
 	}
 	return root
 }
