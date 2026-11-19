@@ -24,6 +24,14 @@ type Domain struct {
 	SoftwareImageService SoftwareImageServiceInterface
 	// ExtraService manages the host's additional resources of the softwares.
 	ExtraService ExtraServiceInterface
+	// SoftwareStatusService manages the software statuses.
+	SoftwareStatusService SoftwareStatusServiceInterface
+	// SoftwareCategoryService manages the software categories.
+	SoftwareCategoryService SoftwareCategoryServiceInterface
+	// PlatformLinkService manages the platform links.
+	PlatformLinkService PlatformLinkServiceInterface
+	// DownloadService reads the download log and its statistics.
+	DownloadService DownloadServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -45,6 +53,14 @@ type Domain struct {
 	SoftwareImageRepository SoftwareImageRepositoryInterface
 	// ExtraRepository talks to the extras resource.
 	ExtraRepository ExtraRepositoryInterface
+	// SoftwareStatusRepository talks to the software statuses resource.
+	SoftwareStatusRepository SoftwareStatusRepositoryInterface
+	// SoftwareCategoryRepository talks to the software categories resource.
+	SoftwareCategoryRepository SoftwareCategoryRepositoryInterface
+	// PlatformLinkRepository talks to the platform links resource.
+	PlatformLinkRepository PlatformLinkRepositoryInterface
+	// DownloadRepository talks to the downloads resource.
+	DownloadRepository DownloadRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -61,6 +77,10 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	external_link_repository := ExternalLinkRepository{Client: client}
 	software_image_repository := SoftwareImageRepository{Client: client}
 	extra_repository := ExtraRepository{Client: client}
+	software_status_repository := SoftwareStatusRepository{Client: client}
+	software_category_repository := SoftwareCategoryRepository{Client: client}
+	platform_link_repository := PlatformLinkRepository{Client: client}
+	download_repository := DownloadRepository{Client: client}
 
 	return Domain{
 		AuthService: AuthService{
@@ -88,5 +108,14 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		ExternalLinkRepository:  external_link_repository,
 		SoftwareImageRepository: software_image_repository,
 		ExtraRepository:         extra_repository,
+		SoftwareStatusService:   SoftwareStatusService{SoftwareStatusRepository: software_status_repository},
+		SoftwareCategoryService: SoftwareCategoryService{SoftwareCategoryRepository: software_category_repository},
+		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository},
+		DownloadService:         DownloadService{DownloadRepository: download_repository, SoftwareRepository: software_repository},
+
+		SoftwareStatusRepository:   software_status_repository,
+		SoftwareCategoryRepository: software_category_repository,
+		PlatformLinkRepository:     platform_link_repository,
+		DownloadRepository:         download_repository,
 	}
 }
