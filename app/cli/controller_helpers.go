@@ -62,7 +62,7 @@ func ExitCode(err error) int {
 		return ExitOK
 	}
 	var usage *UsageError
-	if errors.As(err, &usage) {
+	if errors.As(err, &usage) || isCobraUsage(err) {
 		return ExitUsage
 	}
 	if errors.Is(err, domain.ErrNoProfile) || errors.Is(err, api.ErrNoServer) || errors.Is(err, domain.ErrNoLocalToken) ||
@@ -85,6 +85,14 @@ func ExitCode(err error) int {
 		return ExitServer
 	}
 	return ExitError
+}
+
+// isCobraUsage reports whether err is one of cobra's own command-line
+// errors, which are plain errors: an unknown command or flag.
+func isCobraUsage(err error) bool {
+	text := err.Error()
+	return strings.HasPrefix(text, "unknown command") || strings.HasPrefix(text, "unknown flag") ||
+		strings.HasPrefix(text, "unknown shorthand flag")
 }
 
 // isNetworkError reports whether err comes from reaching the server rather

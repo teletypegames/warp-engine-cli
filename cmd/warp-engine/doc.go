@@ -121,8 +121,6 @@
 // answers for you, and without a terminal the command refuses to run
 // without it.
 //
-// # SECTIONS
-//
 // # The softwares
 //
 // The entries of the catalog: games, demos and tools.
@@ -139,6 +137,119 @@
 // pipeline, and prints the repository's addresses:
 //
 //	warp-engine software scaffold --name my-game --title "My Game" --platform tic80
+//
+// # Releases
+//
+// A release is one version of a software, with its files. The channel follows
+// from the version and cannot be set: dev-… is dev, a pre-release such as
+// 1.3.0-beta.1 is beta, anything else stable. The commit is set by the CI.
+// Adding a version that was deleted brings it back. Deleting a release deletes
+// its files too.
+//
+//	warp-engine release list pong --channel beta --sort -version
+//	warp-engine release list pong --commit-sha 3fb3ed8 -o id
+//	warp-engine release show 42
+//	warp-engine release create pong --version 1.2.0
+//	warp-engine release update 42 --version 1.2.1
+//	warp-engine release delete 42 --yes
+//
+// # Release files
+//
+// The files of a release, under asset, point into the artifact store: a kind
+// (cartridge, source, html, docs, win_x86, win_x64, linux_x86, linux_x64,
+// linux_arm64, mac_x64, mac_arm64, mac_universal) and an absolute path. A
+// download-only platform cannot have an html file.
+//
+//	warp-engine asset list 42
+//	warp-engine asset show 7
+//	warp-engine asset create 42 --kind html --path /pong/1.2.0/html/index.html
+//	warp-engine asset update 7 --path /pong/1.2.0/pong.love
+//	warp-engine asset delete 7 --yes
+//
+// # Links
+//
+// The external links of a software, under link: its source repository, a store
+// page, a video.
+//
+//	warp-engine link list pong
+//	warp-engine link create pong --label Source --url https://git.example.org/games/pong
+//	warp-engine link update 5 --label "Source code"
+//	warp-engine link delete 5 --yes
+//
+// # Images
+//
+// The screenshots and covers of a software, under image, in order. upload puts
+// a file into the host's image library and binds it in one step; create binds
+// an image the library already has, by its ID. update makes an image the
+// default or moves it. delete only unbinds it: the library keeps the picture.
+//
+//	warp-engine image list pong
+//	warp-engine image upload pong cover.png --default
+//	warp-engine image upload pong shot-2.png --position 2
+//	warp-engine image create pong --image-id 118 --position 3
+//	warp-engine image update 31 --position 0
+//	warp-engine image delete 31 --yes
+//
+// # Extras
+//
+// A hosted engine can declare additional resources of its own for a software,
+// such as its SEO metadata; "software show SOFTWARE --include extras" lists
+// them, and an engine without any answers 404 (exit code 4). update replaces
+// the value: a JSON object, or an array of objects for a resource that holds
+// many; an entry with "id" and "_destroy": true removes one.
+//
+//	warp-engine extra show pong seo_metadata -o json
+//	warp-engine extra update pong seo_metadata --value '{"title":"Pong"}'
+//	warp-engine extra update pong seo_metadata --value @seo.json
+//
+// # Statuses and categories
+//
+// A software's status and category are keys of two vocabularies on the
+// server. The statuses say what state a software is in and whether the stores
+// show it by default; the categories group the catalog. A category key that a
+// software brings and the vocabulary does not know yet is registered with
+// "needs review" set, waiting for someone to approve it. Records are named by
+// their numeric ID.
+//
+//	warp-engine status list
+//	warp-engine status create --key beta --label Beta --badge BETA --default-visible
+//	warp-engine status update 4 --position 2 --badge ""
+//	warp-engine status delete 4 --yes
+//	warp-engine category list --needs-review
+//	warp-engine category update 9 --label Utility --needs-review=false
+//
+// Both lists take --sort position or key; statuses filter on
+// --default-visible, categories on --needs-review (both also take =false).
+//
+// # Platform links
+//
+// A platform link is shown with every software of one platform: the emulator,
+// runtime or documentation a player needs.
+//
+//	warp-engine platform-link list --platform c64
+//	warp-engine platform-link create --platform c64 --name VICE --url https://vice-emu.sourceforge.io/
+//	warp-engine platform-link update 3 --position 0
+//
+// # Downloads
+//
+// The server logs every file it serves. "download list" reads the log, newest
+// first, and filters it by substrings (--file-path, --software for the
+// software's title, --ip-address, --user-agent, --referer) and by time
+// (--from, inclusive, and --to, exclusive). Times are ISO 8601; a bare date
+// means its midnight UTC.
+//
+//	warp-engine download list --software ra --from 2026-11-01
+//	warp-engine download list --file-path .d64 --all -o json
+//	warp-engine download show 1234
+//
+// The statistics: the counts of today, this week, this month and in total, the
+// most downloaded files and softwares (--limit, at most 100), and one
+// software's downloads by release and by file:
+//
+//	warp-engine download summary
+//	warp-engine download top-files --limit 20
+//	warp-engine download top-softwares
+//	warp-engine download stats blessing-of-ra
 //
 // # Any request
 //
