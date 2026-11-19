@@ -251,6 +251,149 @@
 //	warp-engine download top-softwares
 //	warp-engine download stats blessing-of-ra
 //
+// # Pipelines
+//
+// A pipeline is a repository on the CI server that the engine knows: the
+// platform it builds for and the software its builds are published as.
+// "pipeline sync" reads the repositories from the CI server and prints what was
+// created, updated or deactivated. "pipeline update" sets the platform or the
+// software; --software takes an ID or a name, and "" detaches it. A software
+// has one pipeline, so giving it to one pipeline takes it from the other.
+// "pipeline runs" lists the runs newest first, one page of the CI server's
+// listing at a time, and "pipeline trigger" starts a run, on main unless
+// --branch says otherwise.
+//
+//	warp-engine pipeline list --platform c64 --active
+//	warp-engine pipeline sync
+//	warp-engine pipeline update 4 --software blessing-of-ra --platform c64
+//	warp-engine pipeline runs 4 --page 2
+//	warp-engine pipeline trigger 4 --branch develop
+//
+// # Files
+//
+// The artifact store is the directory tree of files the engine serves: release
+// files, runtimes, anything uploaded. Paths are relative to its root. "file
+// list" shows one directory (the root without DIR). "file upload" sends a local
+// file into --dir. "file rename" renames in place: NAME is a new name, not a
+// path. "file delete" removes a file or an empty directory and asks first.
+// "file mkdir" needs the parent to exist.
+//
+//	warp-engine file list blessing-of-ra/1.2.0
+//	warp-engine file upload ./manual.pdf --dir blessing-of-ra/docs
+//	warp-engine file rename blessing-of-ra/docs/manual.pdf handbook.pdf
+//	warp-engine file mkdir blessing-of-ra/docs
+//	warp-engine file delete blessing-of-ra/docs/old.pdf --yes
+//
+// # Runtimes
+//
+// A runtime is the player a platform's games run in on the web. "runtime list"
+// and "runtime show" list the installed versions with their components and how
+// many releases use them. "runtime install" installs a runtime the engine
+// downloads, with the components its platforms need; without VERSION it takes
+// the version the engine has chosen, and with --dry-run it only prints what it
+// would fetch and keep.
+//
+//	warp-engine runtime list --name emulatorjs
+//	warp-engine runtime install emulatorjs --dry-run
+//	warp-engine runtime install tic80 1.2.2715-dev
+//
+// # Sync peers
+//
+// A sync peer is another WarpEngine this one pushes releases to (outbound),
+// takes pushes from (inbound), or both. The http transport needs the other
+// engine's host and the token it issued (--secret); rsync needs host, user and
+// path, and takes port and host_key. Transport options are given with --option
+// key=value, repeatable; they replace the stored set, so give all of them
+// (--data '{"transportOptions":{…}}' does the same in JSON). check asks whether
+// the other side accepts this engine and exits 1 when it does not. push queues
+// the releases one peer may be missing, and run does it for every outbound peer
+// or the --peer ones; both ask first unless --yes, and --dry-run only shows
+// what would go. inbound-token issues the token the peer pushes here with: it
+// is shown once, and the old one stops working.
+//
+//	warp-engine peer list --outbound
+//	warp-engine peer create --label games --option host=https://games.example.org --secret we_xxx --outbound
+//	warp-engine peer update 3 --channels stable,beta
+//	warp-engine peer check 3
+//	warp-engine peer push 3 --software blessing-of-ra --dry-run
+//	warp-engine peer run --peer 3 --peer 5 --all --yes
+//	warp-engine peer inbound-token 3 --yes
+//	warp-engine peer delete 3 --yes
+//
+// # Pairings
+//
+// A pairing is an inbound-only peer you add yourself, so that another engine
+// (your laptop's WarpEngine Local, say) may push here. It needs the sync:pair
+// scope while the server lets anyone pair, or admin:write. create and token
+// print the new token once: set it as the secret of the other engine's peer
+// for this one. The server answers 409 while inbound sync is off.
+//
+//	warp-engine pairing create --label "laptop local"
+//	warp-engine pairing list
+//	warp-engine pairing token 2 --yes
+//	warp-engine pairing delete 2 --yes
+//
+// # Sync events
+//
+// Every push of a release between this engine and a peer, in either
+// direction, is a sync event, newest first; --software takes an ID or a name.
+// "sync-event software" lists the events of one software, and "sync-event
+// status" shows where it stands with every peer: the latest event, and why the
+// newest release would not go.
+//
+//	warp-engine sync-event list --status failed
+//	warp-engine sync-event list --peer 3 --software blessing-of-ra
+//	warp-engine sync-event show 41
+//	warp-engine sync-event software blessing-of-ra --direction outbound
+//	warp-engine sync-event status blessing-of-ra
+//
+// # Application tokens
+//
+// Application tokens are what programs sign in with: pipelines publishing
+// releases, store clients, admin tools, other engines. Managing them needs the
+// admin:tokens scope (sign in with --scopes admin:read,admin:write,admin:tokens).
+// You cannot grant scopes you do not hold, nor an expiry later than your own;
+// without --expires-at a new token expires with yours, and --expires-at ""
+// means never. create and rotate print the token once, under the record; with
+// -o json it is the plainToken field. rotate replaces a token, and the new one
+// is pushed to the pipelines that use it. delete (alias revoke) ends it; a
+// token cannot revoke itself.
+//
+//	warp-engine token list --state active
+//	warp-engine token create --name ci --scopes admin:read,admin:write --expires-at 2027-06-30T00:00:00Z
+//	warp-engine token create --name reader --scopes admin:read -o json | jq -r .plainToken
+//	warp-engine token update 12 --scopes admin:read
+//	warp-engine token rotate 12 --yes
+//	warp-engine token revoke 12 --yes
+//
+// # WarpEngine Local
+//
+// WarpEngine Local can run a git server and a CI next to the engine. Only
+// WarpEngine Local has the "local" commands; any other server answers 404
+// (exit code 4). "local components" shows the components and their state.
+// "local enable" starts a component and what it needs; "local disable" stops
+// it and what needs it, and keeps its data; "local remove" removes its
+// containers, with --purge its data and generated sign-ins too, and asks first.
+// "local credentials" prints a component's generated sign-in, password
+// included. "local ci-setup" sets a software (ID or name) up on the local git
+// server and CI, starting them when they are off; its result holds the push
+// URL. "local ci-teardown" stops a software's local CI and keeps its
+// repository.
+//
+// Enabling, disabling, removing and the CI setup run in the background on the
+// engine. The commands wait for them: they print each step on standard error
+// as it happens, then the finished operation. A failed operation is an error
+// (exit code 1), and so is one that has not finished within --timeout (default
+// 10m); it goes on running on the engine. --no-wait prints the queued operation
+// at once, and "local operation ID --wait" follows it later.
+//
+//	warp-engine local components
+//	warp-engine local enable woodpecker
+//	warp-engine local ci-setup my-game
+//	warp-engine local enable gitea --no-wait -o id
+//	warp-engine local operation 12 --wait
+//	warp-engine local remove woodpecker --purge --yes
+//
 // # Any request
 //
 // "api" sends any request, signed in like every other command, and prints
