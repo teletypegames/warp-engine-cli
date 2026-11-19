@@ -26,6 +26,14 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		SoftwareCategoryController: SoftwareCategoryController{SoftwareCategoryService: d.SoftwareCategoryService},
 		PlatformLinkController:     PlatformLinkController{PlatformLinkService: d.PlatformLinkService},
 		DownloadController:         DownloadController{DownloadService: d.DownloadService},
+		PipelineController:         PipelineController{PipelineService: d.PipelineService},
+		FileController:             FileController{FileService: d.FileService},
+		RuntimeController:          RuntimeController{RuntimeService: d.RuntimeService},
+		LocalComponentController: LocalComponentController{
+			LocalComponentService: d.LocalComponentService,
+			LocalOperationService: d.LocalOperationService,
+		},
+		LocalOperationController: LocalOperationController{LocalOperationService: d.LocalOperationService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

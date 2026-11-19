@@ -32,6 +32,16 @@ type Domain struct {
 	PlatformLinkService PlatformLinkServiceInterface
 	// DownloadService reads the download log and its statistics.
 	DownloadService DownloadServiceInterface
+	// PipelineService manages the CI pipelines.
+	PipelineService PipelineServiceInterface
+	// FileService manages the artifact store.
+	FileService FileServiceInterface
+	// RuntimeService manages the runtimes.
+	RuntimeService RuntimeServiceInterface
+	// LocalComponentService manages the components of WarpEngine Local.
+	LocalComponentService LocalComponentServiceInterface
+	// LocalOperationService follows the background jobs of WarpEngine Local.
+	LocalOperationService LocalOperationServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -61,6 +71,16 @@ type Domain struct {
 	PlatformLinkRepository PlatformLinkRepositoryInterface
 	// DownloadRepository talks to the downloads resource.
 	DownloadRepository DownloadRepositoryInterface
+	// PipelineRepository talks to the pipelines resource.
+	PipelineRepository PipelineRepositoryInterface
+	// FileRepository talks to the files resource.
+	FileRepository FileRepositoryInterface
+	// RuntimeRepository talks to the runtimes resource.
+	RuntimeRepository RuntimeRepositoryInterface
+	// LocalComponentRepository talks to the local_components resource.
+	LocalComponentRepository LocalComponentRepositoryInterface
+	// LocalOperationRepository talks to the local_operations resource.
+	LocalOperationRepository LocalOperationRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -81,6 +101,11 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	software_category_repository := SoftwareCategoryRepository{Client: client}
 	platform_link_repository := PlatformLinkRepository{Client: client}
 	download_repository := DownloadRepository{Client: client}
+	pipeline_repository := PipelineRepository{Client: client}
+	file_repository := FileRepository{Client: client}
+	runtime_repository := RuntimeRepository{Client: client}
+	local_component_repository := LocalComponentRepository{Client: client}
+	local_operation_repository := LocalOperationRepository{Client: client}
 
 	return Domain{
 		AuthService: AuthService{
@@ -117,5 +142,19 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SoftwareCategoryRepository: software_category_repository,
 		PlatformLinkRepository:     platform_link_repository,
 		DownloadRepository:         download_repository,
+		PipelineService:            PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository},
+		FileService:                FileService{FileRepository: file_repository},
+		RuntimeService:             RuntimeService{RuntimeRepository: runtime_repository},
+		LocalComponentService: LocalComponentService{
+			LocalComponentRepository: local_component_repository,
+			SoftwareRepository:       software_repository,
+		},
+		LocalOperationService: LocalOperationService{LocalOperationRepository: local_operation_repository},
+
+		PipelineRepository:       pipeline_repository,
+		FileRepository:           file_repository,
+		RuntimeRepository:        runtime_repository,
+		LocalComponentRepository: local_component_repository,
+		LocalOperationRepository: local_operation_repository,
 	}
 }
