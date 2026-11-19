@@ -49,6 +49,14 @@ type Router struct {
 	ProfileController ProfileControllerInterface
 	// SoftwareController: software list|show|create|update|delete|scaffold.
 	SoftwareController SoftwareControllerInterface
+	// SoftwareStatusController: status list|show|create|update|delete.
+	SoftwareStatusController SoftwareStatusControllerInterface
+	// SoftwareCategoryController: category list|show|create|update|delete.
+	SoftwareCategoryController SoftwareCategoryControllerInterface
+	// PlatformLinkController: platform-link list|show|create|update|delete.
+	PlatformLinkController PlatformLinkControllerInterface
+	// DownloadController: download list|show|summary|top-files|top-softwares|stats.
+	DownloadController DownloadControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -90,6 +98,18 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.SoftwareController != nil {
 		r.software(root)
+	}
+	if r.SoftwareStatusController != nil {
+		r.softwareStatus(root)
+	}
+	if r.SoftwareCategoryController != nil {
+		r.softwareCategory(root)
+	}
+	if r.PlatformLinkController != nil {
+		r.platformLink(root)
+	}
+	if r.DownloadController != nil {
+		r.download(root)
 	}
 	return root
 }
