@@ -42,6 +42,14 @@ type Domain struct {
 	LocalComponentService LocalComponentServiceInterface
 	// LocalOperationService follows the background jobs of WarpEngine Local.
 	LocalOperationService LocalOperationServiceInterface
+	// SyncPeerService manages the sync peers.
+	SyncPeerService SyncPeerServiceInterface
+	// SyncPairingService manages the caller's own sync pairings.
+	SyncPairingService SyncPairingServiceInterface
+	// SyncEventService reads the sync events and states.
+	SyncEventService SyncEventServiceInterface
+	// ApplicationTokenService manages the application tokens.
+	ApplicationTokenService ApplicationTokenServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -81,6 +89,14 @@ type Domain struct {
 	LocalComponentRepository LocalComponentRepositoryInterface
 	// LocalOperationRepository talks to the local_operations resource.
 	LocalOperationRepository LocalOperationRepositoryInterface
+	// SyncPeerRepository talks to the sync_peers resource.
+	SyncPeerRepository SyncPeerRepositoryInterface
+	// SyncPairingRepository talks to the sync_pairings resource.
+	SyncPairingRepository SyncPairingRepositoryInterface
+	// SyncEventRepository talks to the sync_events resource.
+	SyncEventRepository SyncEventRepositoryInterface
+	// ApplicationTokenRepository talks to the application_tokens resource.
+	ApplicationTokenRepository ApplicationTokenRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -106,6 +122,10 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	runtime_repository := RuntimeRepository{Client: client}
 	local_component_repository := LocalComponentRepository{Client: client}
 	local_operation_repository := LocalOperationRepository{Client: client}
+	sync_peer_repository := SyncPeerRepository{Client: client}
+	sync_pairing_repository := SyncPairingRepository{Client: client}
+	sync_event_repository := SyncEventRepository{Client: client}
+	application_token_repository := ApplicationTokenRepository{Client: client}
 
 	return Domain{
 		AuthService: AuthService{
@@ -113,48 +133,50 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 			ProfileRepository:    profile_repository,
 			LocalTokenRepository: local_token_repository,
 		},
-		ProfileService:  ProfileService{ProfileRepository: profile_repository},
-		SoftwareService: SoftwareService{SoftwareRepository: software_repository},
-		RawService:      RawService{RawRepository: raw_repository},
-
-		AuthRepository:       auth_repository,
-		ProfileRepository:    profile_repository,
-		LocalTokenRepository: local_token_repository,
-		SoftwareRepository:   software_repository,
-		RawRepository:        raw_repository,
-		ReleaseService:       ReleaseService{ReleaseRepository: release_repository, SoftwareRepository: software_repository},
-		ReleaseAssetService:  ReleaseAssetService{ReleaseAssetRepository: release_asset_repository},
-		ExternalLinkService:  ExternalLinkService{ExternalLinkRepository: external_link_repository, SoftwareRepository: software_repository},
-		SoftwareImageService: SoftwareImageService{SoftwareImageRepository: software_image_repository, SoftwareRepository: software_repository},
-		ExtraService:         ExtraService{ExtraRepository: extra_repository, SoftwareRepository: software_repository},
-
-		ReleaseRepository:       release_repository,
-		ReleaseAssetRepository:  release_asset_repository,
-		ExternalLinkRepository:  external_link_repository,
-		SoftwareImageRepository: software_image_repository,
-		ExtraRepository:         extra_repository,
+		ProfileService:          ProfileService{ProfileRepository: profile_repository},
+		SoftwareService:         SoftwareService{SoftwareRepository: software_repository},
+		RawService:              RawService{RawRepository: raw_repository},
+		ReleaseService:          ReleaseService{ReleaseRepository: release_repository, SoftwareRepository: software_repository},
+		ReleaseAssetService:     ReleaseAssetService{ReleaseAssetRepository: release_asset_repository},
+		ExternalLinkService:     ExternalLinkService{ExternalLinkRepository: external_link_repository, SoftwareRepository: software_repository},
+		SoftwareImageService:    SoftwareImageService{SoftwareImageRepository: software_image_repository, SoftwareRepository: software_repository},
+		ExtraService:            ExtraService{ExtraRepository: extra_repository, SoftwareRepository: software_repository},
 		SoftwareStatusService:   SoftwareStatusService{SoftwareStatusRepository: software_status_repository},
 		SoftwareCategoryService: SoftwareCategoryService{SoftwareCategoryRepository: software_category_repository},
 		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository},
 		DownloadService:         DownloadService{DownloadRepository: download_repository, SoftwareRepository: software_repository},
+		PipelineService:         PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository},
+		FileService:             FileService{FileRepository: file_repository},
+		RuntimeService:          RuntimeService{RuntimeRepository: runtime_repository},
+		LocalComponentService:   LocalComponentService{LocalComponentRepository: local_component_repository, SoftwareRepository: software_repository},
+		LocalOperationService:   LocalOperationService{LocalOperationRepository: local_operation_repository},
+		SyncPeerService:         SyncPeerService{SyncPeerRepository: sync_peer_repository},
+		SyncPairingService:      SyncPairingService{SyncPairingRepository: sync_pairing_repository},
+		SyncEventService:        SyncEventService{SyncEventRepository: sync_event_repository, SoftwareRepository: software_repository},
+		ApplicationTokenService: ApplicationTokenService{ApplicationTokenRepository: application_token_repository},
 
+		AuthRepository:             auth_repository,
+		ProfileRepository:          profile_repository,
+		LocalTokenRepository:       local_token_repository,
+		SoftwareRepository:         software_repository,
+		RawRepository:              raw_repository,
+		ReleaseRepository:          release_repository,
+		ReleaseAssetRepository:     release_asset_repository,
+		ExternalLinkRepository:     external_link_repository,
+		SoftwareImageRepository:    software_image_repository,
+		ExtraRepository:            extra_repository,
 		SoftwareStatusRepository:   software_status_repository,
 		SoftwareCategoryRepository: software_category_repository,
 		PlatformLinkRepository:     platform_link_repository,
 		DownloadRepository:         download_repository,
-		PipelineService:            PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository},
-		FileService:                FileService{FileRepository: file_repository},
-		RuntimeService:             RuntimeService{RuntimeRepository: runtime_repository},
-		LocalComponentService: LocalComponentService{
-			LocalComponentRepository: local_component_repository,
-			SoftwareRepository:       software_repository,
-		},
-		LocalOperationService: LocalOperationService{LocalOperationRepository: local_operation_repository},
-
-		PipelineRepository:       pipeline_repository,
-		FileRepository:           file_repository,
-		RuntimeRepository:        runtime_repository,
-		LocalComponentRepository: local_component_repository,
-		LocalOperationRepository: local_operation_repository,
+		PipelineRepository:         pipeline_repository,
+		FileRepository:             file_repository,
+		RuntimeRepository:          runtime_repository,
+		LocalComponentRepository:   local_component_repository,
+		LocalOperationRepository:   local_operation_repository,
+		SyncPeerRepository:         sync_peer_repository,
+		SyncPairingRepository:      sync_pairing_repository,
+		SyncEventRepository:        sync_event_repository,
+		ApplicationTokenRepository: application_token_repository,
 	}
 }

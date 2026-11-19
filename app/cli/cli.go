@@ -33,7 +33,11 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 			LocalComponentService: d.LocalComponentService,
 			LocalOperationService: d.LocalOperationService,
 		},
-		LocalOperationController: LocalOperationController{LocalOperationService: d.LocalOperationService},
+		LocalOperationController:   LocalOperationController{LocalOperationService: d.LocalOperationService},
+		SyncPeerController:         SyncPeerController{SyncPeerService: d.SyncPeerService},
+		SyncPairingController:      SyncPairingController{SyncPairingService: d.SyncPairingService},
+		SyncEventController:        SyncEventController{SyncEventService: d.SyncEventService},
+		ApplicationTokenController: ApplicationTokenController{ApplicationTokenService: d.ApplicationTokenService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)
