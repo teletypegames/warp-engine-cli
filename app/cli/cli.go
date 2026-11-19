@@ -16,6 +16,7 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		AuthController:     AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
 		ProfileController:  ProfileController{ProfileService: d.ProfileService},
 		SoftwareController: SoftwareController{SoftwareService: d.SoftwareService},
+		RawController:      RawController{RawService: d.RawService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

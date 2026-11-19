@@ -12,6 +12,8 @@ type Domain struct {
 	ProfileService ProfileServiceInterface
 	// SoftwareService manages the softwares.
 	SoftwareService SoftwareServiceInterface
+	// RawService sends any request.
+	RawService RawServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -21,6 +23,8 @@ type Domain struct {
 	LocalTokenRepository LocalTokenRepositoryInterface
 	// SoftwareRepository talks to the softwares resource.
 	SoftwareRepository SoftwareRepositoryInterface
+	// RawRepository sends any request.
+	RawRepository RawRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -31,6 +35,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	profile_repository := ProfileRepository{Path: config_path}
 	local_token_repository := LocalTokenRepository{Directory: local_directory}
 	software_repository := SoftwareRepository{Client: client}
+	raw_repository := RawRepository{Client: client}
 
 	return Domain{
 		AuthService: AuthService{
@@ -40,10 +45,12 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		},
 		ProfileService:  ProfileService{ProfileRepository: profile_repository},
 		SoftwareService: SoftwareService{SoftwareRepository: software_repository},
+		RawService:      RawService{RawRepository: raw_repository},
 
 		AuthRepository:       auth_repository,
 		ProfileRepository:    profile_repository,
 		LocalTokenRepository: local_token_repository,
 		SoftwareRepository:   software_repository,
+		RawRepository:        raw_repository,
 	}
 }

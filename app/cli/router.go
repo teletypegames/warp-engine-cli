@@ -49,6 +49,8 @@ type Router struct {
 	ProfileController ProfileControllerInterface
 	// SoftwareController: software list|show|create|update|delete|scaffold.
 	SoftwareController SoftwareControllerInterface
+	// RawController: api METHOD PATH.
+	RawController RawControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -90,6 +92,9 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.SoftwareController != nil {
 		r.software(root)
+	}
+	if r.RawController != nil {
+		r.raw(root)
 	}
 	return root
 }
