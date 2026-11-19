@@ -13,9 +13,13 @@ import (
 func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) int {
 	session := &Session{}
 	root := Router{
-		AuthController:     AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
-		ProfileController:  ProfileController{ProfileService: d.ProfileService},
-		SoftwareController: SoftwareController{SoftwareService: d.SoftwareService},
+		AuthController:             AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
+		ProfileController:          ProfileController{ProfileService: d.ProfileService},
+		SoftwareController:         SoftwareController{SoftwareService: d.SoftwareService},
+		SyncPeerController:         SyncPeerController{SyncPeerService: d.SyncPeerService},
+		SyncPairingController:      SyncPairingController{SyncPairingService: d.SyncPairingService},
+		SyncEventController:        SyncEventController{SyncEventService: d.SyncEventService},
+		ApplicationTokenController: ApplicationTokenController{ApplicationTokenService: d.ApplicationTokenService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

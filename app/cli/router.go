@@ -49,6 +49,14 @@ type Router struct {
 	ProfileController ProfileControllerInterface
 	// SoftwareController: software list|show|create|update|delete|scaffold.
 	SoftwareController SoftwareControllerInterface
+	// SyncPeerController: peer list|show|create|update|delete|check|inbound-token|push|run.
+	SyncPeerController SyncPeerControllerInterface
+	// SyncPairingController: pairing list|show|create|update|delete|token.
+	SyncPairingController SyncPairingControllerInterface
+	// SyncEventController: sync-event list|show|software|status.
+	SyncEventController SyncEventControllerInterface
+	// ApplicationTokenController: token list|show|create|update|delete|rotate.
+	ApplicationTokenController ApplicationTokenControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -90,6 +98,18 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.SoftwareController != nil {
 		r.software(root)
+	}
+	if r.SyncPeerController != nil {
+		r.syncPeer(root)
+	}
+	if r.SyncPairingController != nil {
+		r.syncPairing(root)
+	}
+	if r.SyncEventController != nil {
+		r.syncEvent(root)
+	}
+	if r.ApplicationTokenController != nil {
+		r.applicationToken(root)
 	}
 	return root
 }
