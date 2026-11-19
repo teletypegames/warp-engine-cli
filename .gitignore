@@ -1,0 +1,5 @@
+/dist/
+/doc/
+/warp-engine
+*.tmp
+.DS_Store
