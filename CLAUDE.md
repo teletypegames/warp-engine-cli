@@ -5,7 +5,7 @@ warp-engine-cli: the command line of a WarpEngine server, over its Admin API
 `git.teletypegames.org/engines/warp-engine-cli`, binary `warp-engine`
 (`cmd/warp-engine`). The documentation lives in the source: the package
 comments are the manual and the doc comments the reference. Every release tag
-publishes it to https://wiki.teletypegames.org/godoc/warp-engine-cli/latest/ ;
+publishes it to https://wiki.teletypegames.org/godoc/warp-engine-cli/latest/cmd/warp-engine/ ;
 `README.md` only installs and links there.
 
 The Admin API's contract is its OpenAPI document,
@@ -127,9 +127,12 @@ CI fails on any exported identifier without a doc comment (`revive` with
 
 ## Releases
 
-A release is a `vX.Y.Z` tag on master. Its pipeline runs the checks, builds
-the binaries for linux, darwin and windows (amd64, arm64) with
-`-X …/app/cli.Version=X.Y.Z`, attaches them with `checksums.txt` to the Gitea
-release (the installers download from there) and publishes the Go doc as the
-generic package `engines/warp-engine-cli-godoc/<version>`, which the
-wiki-fetcher unpacks under `/godoc/`.
+A release is a `vX.Y.Z` tag on master, with a `## X.Y.Z` section in
+`CHANGELOG.md` (it becomes the release notes). Its pipeline runs the checks,
+builds the static binaries `warp-engine-<os>-<arch>[.exe]` for linux, darwin
+and windows on amd64 and arm64 with `-X …/app/cli.Version=X.Y.Z`, attaches
+them with `SHA256SUMS` to the Gitea release (`install.sh` and `install.ps1`
+download from there, the same scheme as engines/warp-engine-mcp), and
+publishes the Go doc as the generic package
+`engines/warp-engine-cli-godoc/<version>`, which the wiki-fetcher unpacks
+under `/godoc/`.

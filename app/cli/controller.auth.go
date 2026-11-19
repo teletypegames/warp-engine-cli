@@ -46,12 +46,12 @@ type AuthController struct {
 }
 
 // Connect reads --profile, --server and --token (or WARP_ENGINE_PROFILE,
-// WARP_ENGINE_SERVER, WARP_ENGINE_TOKEN; the flags win) and connects through
+// WARP_ENGINE_URL, WARP_ENGINE_TOKEN; the flags win) and connects through
 // [domain.AuthService.Connect], storing the profile in the session.
 func (c AuthController) Connect(cmd *cobra.Command, args []string) error {
 	selection := domain.Selection{
 		Profile: flagOrEnv(cmd, "profile", "WARP_ENGINE_PROFILE"),
-		Server:  flagOrEnv(cmd, "server", "WARP_ENGINE_SERVER"),
+		Server:  flagOrEnv(cmd, "server", "WARP_ENGINE_URL"),
 		Token:   flagOrEnv(cmd, "token", "WARP_ENGINE_TOKEN"),
 	}
 	profile, err := c.AuthService.Connect(selection)

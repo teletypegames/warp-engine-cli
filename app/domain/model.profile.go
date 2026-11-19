@@ -35,7 +35,7 @@ type ConfigModel struct {
 type Selection struct {
 	// Profile is the profile name (--profile, WARP_ENGINE_PROFILE).
 	Profile string
-	// Server is a server URL (--server, WARP_ENGINE_SERVER).
+	// Server is a server URL (--server, WARP_ENGINE_URL).
 	Server string
 	// Token is a token (--token, WARP_ENGINE_TOKEN).
 	Token string

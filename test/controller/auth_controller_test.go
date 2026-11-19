@@ -97,7 +97,7 @@ func TestAuthController_Whoami_PrintsTheLabel(t *testing.T) {
 }
 
 func TestAuthController_Connect_FlagsWinOverEnvironment(t *testing.T) {
-	t.Setenv("WARP_ENGINE_SERVER", "https://env.example.org")
+	t.Setenv("WARP_ENGINE_URL", "https://env.example.org")
 	t.Setenv("WARP_ENGINE_TOKEN", "env-token")
 	var got domain.Selection
 	auth := &mocksvc.MockAuthService{ConnectFunc: func(selection domain.Selection) (*domain.ProfileModel, error) {

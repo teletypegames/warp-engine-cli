@@ -1,0 +1,83 @@
+# The ebitengine-ttg image has Go, jq, curl, doc2go and revive (services/teletypegames
+# ci/ebitengine-ttg.Dockerfile); a moving tag, so always pulled.
+steps:
+  - name: test
+    image: git.teletypegames.org/build/ebitengine-ttg:latest
+    pull: true
+    commands:
+      - go version
+      - go build ./...
+      - go vet ./...
+      - test -z "$(gofmt -l .)"
+      - go test ./...
+
+  # Every exported identifier has a doc comment and every package a package comment (revive.toml).
+  - name: doc-coverage
+    image: git.teletypegames.org/build/ebitengine-ttg:latest
+    pull: true
+    commands:
+      - revive -config revive.toml -set_exit_status ./...
+      - echo "==> every exported identifier documented"
+
+  # vX.Y.Z tag: static binaries for six targets plus SHA256SUMS as a Gitea release, whose
+  # notes are the version's CHANGELOG.md section; install.sh and install.ps1 download them.
+  - name: release
+    image: git.teletypegames.org/build/ebitengine-ttg:latest
+    pull: true
+    depends_on: [test, doc-coverage]
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_token
+      CGO_ENABLED: "0"
+    commands:
+      - V="$${CI_COMMIT_TAG#v}"
+      - mkdir -p dist
+      - |
+        for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64; do
+          os=$${target%/*}; arch=$${target#*/}; ext=""
+          [ "$$os" = windows ] && ext=.exe
+          GOOS=$$os GOARCH=$$arch go build -trimpath \
+            -ldflags "-s -w -X git.teletypegames.org/engines/warp-engine-cli/app/cli.Version=$$V" \
+            -o "dist/warp-engine-$$os-$$arch$$ext" ./cmd/warp-engine
+        done
+      - cd dist && sha256sum warp-engine-* > SHA256SUMS && cat SHA256SUMS && cd ..
+      - |
+        API="https://git.teletypegames.org/api/v1/repos/$CI_REPO"
+        AUTH="Authorization: token $(printf '%s' "$GITEA_TOKEN" | tr -d '[:space:]')"
+        NOTES=$(awk -v v="## $$V" 'index($$0, v) == 1 {on = 1; next} /^## / {on = 0} on' CHANGELOG.md)
+        BODY=$(jq -n --arg t "$CI_COMMIT_TAG" --arg n "$$NOTES" '{tag_name: $$t, name: ("warp-engine " + $$t), body: $$n}')
+        ID=$(curl --fail-with-body -sS -X POST -H "$$AUTH" -H "Content-Type: application/json" -d "$$BODY" "$$API/releases" | jq -r .id)
+        for f in dist/*; do
+          curl --fail-with-body -sS -o /dev/null -X POST -H "$$AUTH" -F "attachment=@$$f" "$$API/releases/$$ID/assets?name=$(basename "$$f")"
+          echo "==> $(basename "$$f")"
+        done
+    when:
+      - event: tag
+        ref: refs/tags/v*
+
+  # vX.Y.Z tag: the doc2go HTML as the Gitea generic package engines/warp-engine-cli-godoc/<version>,
+  # which the wiki-fetcher unpacks under /godoc/warp-engine-cli/ (services/wiki-pages, fetcher/README.md).
+  - name: publish-godoc
+    image: git.teletypegames.org/build/ebitengine-ttg:latest
+    pull: true
+    depends_on: [test, doc-coverage]
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_token
+    commands:
+      - V="$${CI_COMMIT_TAG#v}"
+      - doc2go -out doc -home git.teletypegames.org/engines/warp-engine-cli -pkg-version "$CI_COMMIT_TAG" -rel-link-style directory ./app/... ./cmd/...
+      # an annotated tag's CI_COMMIT_SHA is the tag object, not the commit
+      - |
+        printf '{"gem":"warp-engine-cli","version":"%s","commit":"%s","date":"%s","coverage":100}\n' "$$V" "$(git rev-parse HEAD)" "$(date -u +%F)" > doc/meta.json
+      - tar -czf godoc.tar.gz -C doc .
+      - |
+        curl --fail-with-body -sS -X PUT \
+          -H "Authorization: token $(printf '%s' "$GITEA_TOKEN" | tr -d '[:space:]')" \
+          -H "Content-Type: application/octet-stream" \
+          --upload-file godoc.tar.gz \
+          "https://git.teletypegames.org/api/packages/engines/generic/warp-engine-cli-godoc/$$V/godoc.tar.gz"
+      - echo "==> warp-engine-cli-godoc $$V uploaded"
+    when:
+      - event: tag
+        ref: refs/tags/v*

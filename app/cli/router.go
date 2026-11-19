@@ -73,7 +73,7 @@ func (r Router) Init() *cobra.Command {
 	root.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error { return &UsageError{Err: err} })
 	flags := root.PersistentFlags()
 	flags.StringP("profile", "p", "", "the profile to use (env WARP_ENGINE_PROFILE; default: the current one)")
-	flags.StringP("server", "s", "", "a server URL instead of a profile (env WARP_ENGINE_SERVER)")
+	flags.StringP("server", "s", "", "a server URL instead of a profile (env WARP_ENGINE_URL)")
 	flags.String("token", "", "an application token instead of the profile's (env WARP_ENGINE_TOKEN)")
 	flags.StringP("output", "o", OutputTable, "output format: table, json or id")
 	root.AddGroup(
@@ -157,7 +157,7 @@ Start by signing in; the server becomes the current profile:
   warp-engine software list
 
 Every list takes --page/--per-page/--all, every command -o json for scripts.
-The full manual: https://wiki.teletypegames.org/godoc/warp-engine-cli/latest/`
+The full manual: https://wiki.teletypegames.org/godoc/warp-engine-cli/latest/cmd/warp-engine/`
 
 // loginHelp is the long help of "login".
 const loginHelp = `Sign in to a WarpEngine server and save it as a profile, which becomes the
