@@ -13,9 +13,14 @@ import (
 func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) int {
 	session := &Session{}
 	root := Router{
-		AuthController:     AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
-		ProfileController:  ProfileController{ProfileService: d.ProfileService},
-		SoftwareController: SoftwareController{SoftwareService: d.SoftwareService},
+		AuthController:          AuthController{AuthService: d.AuthService, Session: session, OpenBrowser: OpenBrowser},
+		ProfileController:       ProfileController{ProfileService: d.ProfileService},
+		SoftwareController:      SoftwareController{SoftwareService: d.SoftwareService},
+		ReleaseController:       ReleaseController{ReleaseService: d.ReleaseService},
+		ReleaseAssetController:  ReleaseAssetController{ReleaseAssetService: d.ReleaseAssetService},
+		ExternalLinkController:  ExternalLinkController{ExternalLinkService: d.ExternalLinkService},
+		SoftwareImageController: SoftwareImageController{SoftwareImageService: d.SoftwareImageService},
+		ExtraController:         ExtraController{ExtraService: d.ExtraService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)
