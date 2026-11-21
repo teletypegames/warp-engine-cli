@@ -101,11 +101,11 @@ func (c SoftwareController) Destroy(cmd *cobra.Command, args []string) error {
 }
 
 // Scaffold creates a software with its forge repository and CI pipeline
-// from --name, --title and --platform (and --category, --description) and
-// prints what was made.
+// from --name, --title and --platform (and --category, --description,
+// --license, and the --fork-of-… flags for a fork) and prints what was made.
 func (c SoftwareController) Scaffold(cmd *cobra.Command, args []string) error {
 	serializer := SoftwareSerializer{}
-	attributes, err := FieldsToAttributes(cmd.Flags(), serializer.ScaffoldFields())
+	attributes, err := serializer.ScaffoldToAttributes(cmd.Flags())
 	if err != nil {
 		return err
 	}

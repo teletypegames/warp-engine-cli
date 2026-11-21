@@ -72,12 +72,20 @@ func (s SoftwareService) Destroy(reference string) error {
 	return s.SoftwareRepository.Destroy(software_id)
 }
 
-// Scaffold checks that attributes hold name, title and platform and sets
-// the software up.
+// Scaffold checks that attributes hold name, title and platform, and for a
+// fork (a forkOf object) the parent's engine and name, and sets the software
+// up.
 func (s SoftwareService) Scaffold(attributes Attributes) (*ScaffoldModel, error) {
 	for _, key := range []string{"name", "title", "platform"} {
 		if !attributes.Has(key) || attributes[key] == nil || attributes[key] == "" {
 			return nil, errors.New("a scaffold needs a " + key)
+		}
+	}
+	if fork_of, ok := attributes["forkOf"].(map[string]any); ok {
+		for _, key := range []string{"engine", "name"} {
+			if fork_of[key] == nil || fork_of[key] == "" {
+				return nil, errors.New("a fork needs the parent's " + key)
+			}
 		}
 	}
 	return s.SoftwareRepository.Scaffold(attributes)

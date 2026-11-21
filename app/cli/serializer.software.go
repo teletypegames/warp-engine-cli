@@ -3,6 +3,7 @@ package cli
 import (
 	"sort"
 	"strconv"
+	"strings"
 
 	"git.teletypegames.org/engines/warp-engine-cli/app/domain"
 	"github.com/spf13/pflag"
@@ -43,10 +44,18 @@ func (s SoftwareSerializer) Fields() []FieldFlag {
 		{Flag: "category", Key: "category", Kind: KindNullable, Usage: "a category key; a new word is registered for review"},
 		{Flag: "highlighted", Key: "highlighted", Kind: KindBool, Usage: "show it first in the stores"},
 		{Flag: "shelf-name", Key: "shelfName", Kind: KindNullable, Usage: "file name on a shelf (A-Z, 0-9, -)"},
+		{Flag: "forks-allowed", Key: "forksAllowed", Kind: KindBool, Usage: "let the developer tools offer a fork (needs a public source link)"},
+		{Flag: "fork-of-engine", Key: "forkOfEngine", Kind: KindNullable, Usage: "for a fork: the parent engine's base URL"},
+		{Flag: "fork-of-name", Key: "forkOfName", Kind: KindNullable, Usage: "for a fork: the parent's name on its engine"},
+		{Flag: "fork-of-version", Key: "forkOfVersion", Kind: KindNullable, Usage: "for a fork: the parent's version"},
+		{Flag: "fork-of-repo", Key: "forkOfRepo", Kind: KindNullable, Usage: "for a fork: the parent's source repository"},
 	}
 }
 
-// ScaffoldFields are the field flags of "software scaffold".
+// ScaffoldFields are the field flags of "software scaffold". The
+// --fork-of-… flags have keys under "forkOf." and
+// [SoftwareSerializer.ScaffoldToAttributes] gathers them into the forkOf
+// object.
 func (s SoftwareSerializer) ScaffoldFields() []FieldFlag {
 	return []FieldFlag{
 		{Flag: "name", Key: "name", Usage: "software and repository name: a-z, 0-9 and dashes"},
@@ -54,7 +63,42 @@ func (s SoftwareSerializer) ScaffoldFields() []FieldFlag {
 		{Flag: "platform", Key: "platform", Usage: "platform", Enum: domain.Platforms},
 		{Flag: "category", Key: "category", Kind: KindNullable, Usage: "a category key"},
 		{Flag: "description", Key: "description", Kind: KindNullable, Usage: "short description"},
+		{Flag: "license", Key: "license", Kind: KindNullable, Usage: "licence"},
+		{Flag: "fork-of-engine", Key: forkOfPrefix + "engine", Usage: "fork a software: the parent engine's base URL"},
+		{Flag: "fork-of-name", Key: forkOfPrefix + "name", Usage: "fork a software: the parent's name on its engine"},
+		{Flag: "fork-of-version", Key: forkOfPrefix + "version", Usage: "fork a software: the parent's version"},
+		{Flag: "fork-of-repo", Key: forkOfPrefix + "repo", Usage: "fork a software: the parent's source repository"},
 	}
+}
+
+// forkOfPrefix marks the scaffold field keys that belong in the forkOf
+// object.
+const forkOfPrefix = "forkOf."
+
+// ScaffoldToAttributes reads the field flags of "software scaffold" and
+// moves the --fork-of-… values into the forkOf object, merged over a forkOf
+// object given in --data.
+func (s SoftwareSerializer) ScaffoldToAttributes(flags *pflag.FlagSet) (domain.Attributes, error) {
+	attributes, err := FieldsToAttributes(flags, s.ScaffoldFields())
+	if err != nil {
+		return nil, err
+	}
+	fork_of := map[string]any{}
+	if given, ok := attributes["forkOf"].(map[string]any); ok {
+		fork_of = given
+	}
+	found := false
+	for key, value := range attributes {
+		if strings.HasPrefix(key, forkOfPrefix) {
+			fork_of[strings.TrimPrefix(key, forkOfPrefix)] = value
+			delete(attributes, key)
+			found = true
+		}
+	}
+	if found {
+		attributes["forkOf"] = fork_of
+	}
+	return attributes, nil
 }
 
 // FlagsToFilter reads the filter flags of "software list".
@@ -93,6 +137,11 @@ func (s SoftwareSerializer) ModelToRecord(software domain.SoftwareModel) Record 
 		{Name: "Category", Value: Text(software.Category)},
 		{Name: "Highlighted", Value: Flag(software.Highlighted)},
 		{Name: "Shelf name", Value: Text(software.ShelfName)},
+		{Name: "Forks allowed", Value: YesNo(software.ForksAllowed)},
+		{Name: "Fork of engine", Value: Text(software.ForkOfEngine)},
+		{Name: "Fork of name", Value: Text(software.ForkOfName)},
+		{Name: "Fork of version", Value: Text(software.ForkOfVersion)},
+		{Name: "Fork of repo", Value: Text(software.ForkOfRepo)},
 		{Name: "License", Value: Text(software.License)},
 		{Name: "Description", Value: Text(software.Desc)},
 		{Name: "Story", Value: Text(software.Story)},

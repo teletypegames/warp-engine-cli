@@ -45,7 +45,8 @@ func (c ExternalLinkController) Show(cmd *cobra.Command, args []string) error {
 	return PrintRecord(cmd, link, ExternalLinkSerializer{}.ModelToRecord(*link))
 }
 
-// Create adds a link from --label and --url to SOFTWARE and prints it.
+// Create adds a link from --label and --url (and --kind, --ref) to
+// SOFTWARE and prints it.
 func (c ExternalLinkController) Create(cmd *cobra.Command, args []string) error {
 	serializer := ExternalLinkSerializer{}
 	attributes, err := serializer.RequestToAttributes(cmd.Flags())

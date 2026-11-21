@@ -1,6 +1,6 @@
 // Command warp-engine manages a WarpEngine server from the command line. It
 // speaks the server's Admin API: the catalog (softwares, releases, release
-// files, images, links), its vocabulary (statuses, categories, platform
+// files, images, links, announced forks), its vocabulary (statuses, categories, platform
 // links), the download statistics, the pipelines, the artifact store, the
 // runtimes, sync with other engines, the application tokens and, on
 // WarpEngine Local, the git server and CI that run beside it. Anything
@@ -132,11 +132,25 @@
 //	warp-engine software update pong --category arcade --shelf-name PONG
 //	warp-engine software delete pong --yes
 //
+// --forks-allowed lets the developer tools offer to fork a software (it needs
+// a public source link); a fork names its parent with --fork-of-engine,
+// --fork-of-name, --fork-of-version and --fork-of-repo:
+//
+//	warp-engine software update pong --forks-allowed
+//	warp-engine software update pong-plus --fork-of-engine https://games.example.org --fork-of-name pong
+//
 // "software scaffold" sets a new software up from nothing on a server that
 // has a forge and a CI: the catalog entry, its git repository and its
 // pipeline, and prints the repository's addresses:
 //
 //	warp-engine software scaffold --name my-game --title "My Game" --platform tic80
+//
+// It also takes --license, and the --fork-of-… flags to set up a fork of a
+// software on another engine (--fork-of-engine and --fork-of-name are
+// needed, --fork-of-version and --fork-of-repo are optional):
+//
+//	warp-engine software scaffold --name pong-plus --title "Pong+" --platform love --license MIT \
+//	    --fork-of-engine https://games.example.org --fork-of-name pong --fork-of-version 1.2.0
 //
 // # Releases
 //
@@ -169,12 +183,32 @@
 // # Links
 //
 // The external links of a software, under link: its source repository, a store
-// page, a video.
+// page, a video. --kind is link (the default) or source: the software's git
+// repository, one per software, with --ref naming a branch or tag (empty for
+// the default branch). The server checks a source link and shows whether it
+// is public, when it checked and why the check failed.
 //
 //	warp-engine link list pong
-//	warp-engine link create pong --label Source --url https://git.example.org/games/pong
-//	warp-engine link update 5 --label "Source code"
+//	warp-engine link create pong --label Source --url https://git.example.org/games/pong --kind source
+//	warp-engine link update 5 --label "Source code" --ref v1.2.0
 //	warp-engine link delete 5 --yes
+//
+// # Forks
+//
+// When another engine forks one of the softwares here, it announces the fork,
+// and the announcement waits as a pending fork link until it is moderated:
+// visible lists the fork with its parent, hidden keeps it out; gone is a fork
+// its engine no longer has. list filters on --status and --software (an ID or
+// a name) and sorts by createdAt or checkedAt; update (alias moderate) sets
+// the status. delete removes the link, but a new announcement brings it back
+// as pending.
+//
+//	warp-engine fork list --status pending
+//	warp-engine fork list --software pong --sort -checkedAt
+//	warp-engine fork show 4
+//	warp-engine fork moderate 4 --status visible
+//	warp-engine fork update 5 --status hidden
+//	warp-engine fork delete 5 --yes
 //
 // # Images
 //

@@ -66,9 +66,9 @@ func TestReleaseAssetSerializer_RequestToAttributes_ChecksTheKind(t *testing.T) 
 }
 
 func TestExternalLinkSerializer_ModelToTable_MapsFields(t *testing.T) {
-	table := cli.ExternalLinkSerializer{}.ModelToTable([]domain.ExternalLinkModel{{ID: 2, Label: "Source", URL: "https://x"}})
+	table := cli.ExternalLinkSerializer{}.ModelToTable([]domain.ExternalLinkModel{{ID: 2, Kind: "link", Label: "Source", URL: "https://x"}})
 
-	assert.Equal(t, []string{"2", "Source", "https://x"}, table.Rows[0])
+	assert.Equal(t, []string{"2", "link", "Source", "https://x", "-", "-"}, table.Rows[0])
 }
 
 func TestExternalLinkSerializer_ModelToTable_Empty(t *testing.T) {

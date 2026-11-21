@@ -16,6 +16,8 @@ func (s ExternalLinkSerializer) Fields() []FieldFlag {
 	return []FieldFlag{
 		{Flag: "label", Key: "label", Usage: "the link's text"},
 		{Flag: "url", Key: "url", Usage: "where it points"},
+		{Flag: "kind", Key: "kind", Usage: "source is the git repository, one per software", Enum: domain.ExternalLinkKinds},
+		{Flag: "ref", Key: "ref", Kind: KindNullable, Usage: "branch or tag of a source; empty for the default branch"},
 	}
 }
 
@@ -24,11 +26,14 @@ func (s ExternalLinkSerializer) RequestToAttributes(flags *pflag.FlagSet) (domai
 	return FieldsToAttributes(flags, s.Fields())
 }
 
-// ModelToTable renders links as a table: ID, label, URL.
+// ModelToTable renders links as a table: ID, kind, label, URL, ref,
+// public.
 func (s ExternalLinkSerializer) ModelToTable(links []domain.ExternalLinkModel) Table {
-	table := Table{Headers: []string{"ID", "Label", "URL"}}
+	table := Table{Headers: []string{"ID", "Kind", "Label", "URL", "Ref", "Public"}}
 	for _, link := range links {
-		table.Rows = append(table.Rows, []string{strconv.Itoa(link.ID), Truncate(link.Label, 40), link.URL})
+		table.Rows = append(table.Rows, []string{
+			strconv.Itoa(link.ID), link.Kind, Truncate(link.Label, 40), link.URL, Text(link.Ref), Flag(link.Public),
+		})
 	}
 	return table
 }
@@ -40,6 +45,11 @@ func (s ExternalLinkSerializer) ModelToRecord(link domain.ExternalLinkModel) Rec
 		{Name: "Software", Value: strconv.Itoa(link.SoftwareID)},
 		{Name: "Label", Value: link.Label},
 		{Name: "URL", Value: link.URL},
+		{Name: "Kind", Value: link.Kind},
+		{Name: "Ref", Value: Text(link.Ref)},
+		{Name: "Public", Value: Flag(link.Public)},
+		{Name: "Verified", Value: Text(link.VerifiedAt)},
+		{Name: "Verify error", Value: Text(link.VerifyError)},
 		{Name: "Created", Value: Text(link.CreatedAt)},
 		{Name: "Updated", Value: Text(link.UpdatedAt)},
 	}

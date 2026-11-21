@@ -20,12 +20,12 @@ func (r Router) externalLink(root *cobra.Command) {
 	})
 	add(link, "", Route{
 		Use: "create SOFTWARE", Short: "Add a link to a software", Args: ExactArgs(1, "SOFTWARE"),
-		Example: "  warp-engine link create pong --label Source --url https://git.example.org/games/pong",
+		Example: "  warp-engine link create pong --label Source --url https://git.example.org/games/pong --kind source --ref main",
 		Flags:   func(flags *pflag.FlagSet) { DeclareFields(flags, serializer.Fields()) },
 		Run:     r.ExternalLinkController.Create,
 	})
 	add(link, "", Route{
-		Use: "update ID", Short: "Change the label or URL of a link", Args: ExactArgs(1, "ID"),
+		Use: "update ID", Short: "Change the label, URL, kind or ref of a link", Args: ExactArgs(1, "ID"),
 		Example: "  warp-engine link update 5 --label \"Source code\"",
 		Flags:   func(flags *pflag.FlagSet) { DeclareFields(flags, serializer.Fields()) },
 		Run:     r.ExternalLinkController.Update,

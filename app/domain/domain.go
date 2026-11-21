@@ -20,6 +20,8 @@ type Domain struct {
 	ReleaseAssetService ReleaseAssetServiceInterface
 	// ExternalLinkService manages the external links.
 	ExternalLinkService ExternalLinkServiceInterface
+	// ForkLinkService moderates the forks other engines announced.
+	ForkLinkService ForkLinkServiceInterface
 	// SoftwareImageService manages the images of the softwares.
 	SoftwareImageService SoftwareImageServiceInterface
 	// ExtraService manages the host's additional resources of the softwares.
@@ -67,6 +69,8 @@ type Domain struct {
 	ReleaseAssetRepository ReleaseAssetRepositoryInterface
 	// ExternalLinkRepository talks to the external links resource.
 	ExternalLinkRepository ExternalLinkRepositoryInterface
+	// ForkLinkRepository talks to the fork_links resource.
+	ForkLinkRepository ForkLinkRepositoryInterface
 	// SoftwareImageRepository talks to the software images resource.
 	SoftwareImageRepository SoftwareImageRepositoryInterface
 	// ExtraRepository talks to the extras resource.
@@ -111,6 +115,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	release_repository := ReleaseRepository{Client: client}
 	release_asset_repository := ReleaseAssetRepository{Client: client}
 	external_link_repository := ExternalLinkRepository{Client: client}
+	fork_link_repository := ForkLinkRepository{Client: client}
 	software_image_repository := SoftwareImageRepository{Client: client}
 	extra_repository := ExtraRepository{Client: client}
 	software_status_repository := SoftwareStatusRepository{Client: client}
@@ -139,6 +144,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		ReleaseService:          ReleaseService{ReleaseRepository: release_repository, SoftwareRepository: software_repository},
 		ReleaseAssetService:     ReleaseAssetService{ReleaseAssetRepository: release_asset_repository},
 		ExternalLinkService:     ExternalLinkService{ExternalLinkRepository: external_link_repository, SoftwareRepository: software_repository},
+		ForkLinkService:         ForkLinkService{ForkLinkRepository: fork_link_repository, SoftwareRepository: software_repository},
 		SoftwareImageService:    SoftwareImageService{SoftwareImageRepository: software_image_repository, SoftwareRepository: software_repository},
 		ExtraService:            ExtraService{ExtraRepository: extra_repository, SoftwareRepository: software_repository},
 		SoftwareStatusService:   SoftwareStatusService{SoftwareStatusRepository: software_status_repository},
@@ -163,6 +169,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		ReleaseRepository:          release_repository,
 		ReleaseAssetRepository:     release_asset_repository,
 		ExternalLinkRepository:     external_link_repository,
+		ForkLinkRepository:         fork_link_repository,
 		SoftwareImageRepository:    software_image_repository,
 		ExtraRepository:            extra_repository,
 		SoftwareStatusRepository:   software_status_repository,

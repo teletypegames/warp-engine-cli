@@ -20,6 +20,7 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		ReleaseController:          ReleaseController{ReleaseService: d.ReleaseService},
 		ReleaseAssetController:     ReleaseAssetController{ReleaseAssetService: d.ReleaseAssetService},
 		ExternalLinkController:     ExternalLinkController{ExternalLinkService: d.ExternalLinkService},
+		ForkLinkController:         ForkLinkController{ForkLinkService: d.ForkLinkService},
 		SoftwareImageController:    SoftwareImageController{SoftwareImageService: d.SoftwareImageService},
 		ExtraController:            ExtraController{ExtraService: d.ExtraService},
 		SoftwareStatusController:   SoftwareStatusController{SoftwareStatusService: d.SoftwareStatusService},

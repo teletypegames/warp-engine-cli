@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+For the Admin API of warp_engine 5.6.0.
+
+- `fork list|show|update|delete` (`update` alias `moderate`): the forks other engines announced, filtered by `--status` and `--software`, moderated to visible or hidden.
+- `link create|update` take `--kind link|source` and `--ref`; links show their kind, ref, whether they are public and the last verification.
+- `software create|update` take `--forks-allowed` and `--fork-of-engine|name|version|repo`, and show them.
+- `software scaffold` takes `--license` and `--fork-of-engine|name|version|repo` to set up a fork.
+
 ## 0.1.0
 
 The first release: `warp-engine`, the command line of a WarpEngine server.

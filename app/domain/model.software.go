@@ -35,6 +35,18 @@ type SoftwareModel struct {
 	OwnerType *string `json:"ownerType"`
 	// OwnerID is the owning account, or nil.
 	OwnerID *int `json:"ownerId"`
+	// ForksAllowed tells whether the developer tools may offer to fork it
+	// (it needs a public source link).
+	ForksAllowed bool `json:"forksAllowed"`
+	// ForkOfEngine is, for a fork, the parent engine's base URL, or nil.
+	ForkOfEngine *string `json:"forkOfEngine"`
+	// ForkOfName is, for a fork, the parent's name on its engine, or nil.
+	ForkOfName *string `json:"forkOfName"`
+	// ForkOfVersion is, for a fork, the parent's version it was forked
+	// from, or nil.
+	ForkOfVersion *string `json:"forkOfVersion"`
+	// ForkOfRepo is, for a fork, the parent's source repository, or nil.
+	ForkOfRepo *string `json:"forkOfRepo"`
 	// CreatedAt is when it was created (RFC 3339), or nil.
 	CreatedAt *string `json:"createdAt"`
 	// UpdatedAt is when it last changed (RFC 3339), or nil.

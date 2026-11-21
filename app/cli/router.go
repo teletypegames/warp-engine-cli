@@ -57,6 +57,8 @@ type Router struct {
 	ReleaseAssetController ReleaseAssetControllerInterface
 	// ExternalLinkController: link list|show|create|update|delete.
 	ExternalLinkController ExternalLinkControllerInterface
+	// ForkLinkController: fork list|show|update|delete.
+	ForkLinkController ForkLinkControllerInterface
 	// SoftwareImageController: image list|show|create|upload|update|delete.
 	SoftwareImageController SoftwareImageControllerInterface
 	// ExtraController: extra show|update.
@@ -141,6 +143,9 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.ExternalLinkController != nil {
 		r.externalLink(root)
+	}
+	if r.ForkLinkController != nil {
+		r.forkLink(root)
 	}
 	if r.SoftwareImageController != nil {
 		r.softwareImage(root)
