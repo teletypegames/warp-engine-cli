@@ -26,7 +26,7 @@ func (s PipelineSerializer) Filters() []FilterFlag {
 // Fields are the field flags of "pipeline update".
 func (s PipelineSerializer) Fields() []FieldFlag {
 	return []FieldFlag{
-		{Flag: "platform", Key: "platform", Usage: "platform it builds for", Enum: domain.PipelinePlatforms},
+		{Flag: "platform", Key: "platform", Usage: "platform it builds for: one of the server's, or unknown"},
 		{Flag: "software", Key: "softwareId", Kind: KindNullable, Usage: "the software (ID or name) its builds publish; one pipeline per software"},
 	}
 }

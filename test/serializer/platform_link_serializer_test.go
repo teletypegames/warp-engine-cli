@@ -8,13 +8,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPlatformLinkSerializer_RequestToAttributes_RejectsUnknownPlatform(t *testing.T) {
+func TestPlatformLinkSerializer_RequestToAttributes_PassesAnyPlatform(t *testing.T) {
 	serializer := cli.PlatformLinkSerializer{}
-	flags := parse(t, serializer.Fields(), "--platform", "atari")
+	flags := parse(t, serializer.Fields(), "--platform", "retroarch")
 
-	_, err := serializer.RequestToAttributes(flags)
+	attributes, err := serializer.RequestToAttributes(flags)
 
-	assert.ErrorContains(t, err, "--platform")
+	assert.NoError(t, err)
+	assert.Equal(t, domain.Attributes{"platform": "retroarch"}, attributes)
 }
 
 func TestPlatformLinkSerializer_ModelToTable_MapsFields(t *testing.T) {

@@ -55,14 +55,15 @@ func (e *UsageError) Unwrap() error {
 }
 
 // ExitCode returns the exit code for err: [ExitOK] for nil, then by kind —
-// [*UsageError], the not-signed-in errors of package domain, the HTTP status
+// [*UsageError] and [*domain.ValueError], the not-signed-in errors of package domain, the HTTP status
 // of an [*api.Error] — and [ExitError] for anything else.
 func ExitCode(err error) int {
 	if err == nil {
 		return ExitOK
 	}
 	var usage *UsageError
-	if errors.As(err, &usage) || isCobraUsage(err) {
+	var value *domain.ValueError
+	if errors.As(err, &usage) || errors.As(err, &value) || isCobraUsage(err) {
 		return ExitUsage
 	}
 	if errors.Is(err, domain.ErrNoProfile) || errors.Is(err, api.ErrNoServer) || errors.Is(err, domain.ErrNoLocalToken) ||

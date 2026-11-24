@@ -5,7 +5,7 @@ package domain
 type PlatformLinkModel struct {
 	// ID is the identifier.
 	ID int `json:"id"`
-	// Platform is one of [Platforms].
+	// Platform is one of the server's platforms ([BuildPlatformModel]).
 	Platform string `json:"platform"`
 	// Name is the link's text.
 	Name string `json:"name"`

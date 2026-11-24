@@ -46,10 +46,9 @@ func TestPlatformLinkController_Create_SendsTheFields(t *testing.T) {
 	assert.Contains(t, stdout, "VICE")
 }
 
-func TestPlatformLinkController_Create_RejectsUnknownPlatform(t *testing.T) {
+func TestPlatformLinkController_Create_UnknownPlatformIsAUsageError(t *testing.T) {
 	svc := &mocksvc.MockPlatformLinkService{CreateFunc: func(attributes domain.Attributes) (*domain.PlatformLinkModel, error) {
-		t.Fatal("must not reach the service")
-		return nil, nil
+		return nil, &domain.ValueError{Field: "platform", Value: "atari"}
 	}}
 
 	_, _, err := execute(cli.Router{PlatformLinkController: cli.PlatformLinkController{PlatformLinkService: svc}},

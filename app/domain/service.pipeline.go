@@ -27,6 +27,9 @@ type PipelineService struct {
 	PipelineRepository PipelineRepositoryInterface
 	// SoftwareRepository resolves software names.
 	SoftwareRepository SoftwareRepositoryInterface
+	// BuildPlatformService checks the platform
+	// against the server's; nil checks nothing.
+	BuildPlatformService BuildPlatformServiceInterface
 }
 
 // All lists the pipelines.
@@ -39,12 +42,16 @@ func (s PipelineService) Show(pipeline_id int) (*PipelineModel, error) {
 	return s.PipelineRepository.FindByID(pipeline_id)
 }
 
-// Update changes the pipeline. A softwareId given as a string is a
+// Update changes the pipeline. A platform must be one of the server's or
+// [PipelineUnknownPlatform]. A softwareId given as a string is a
 // software reference (ID or exact name) and is resolved to its ID; nil
 // detaches the software. Empty attributes are [ErrNothingToChange].
 func (s PipelineService) Update(pipeline_id int, attributes Attributes) (*PipelineModel, error) {
 	if len(attributes) == 0 {
 		return nil, ErrNothingToChange
+	}
+	if err := checkPlatformAttribute(s.BuildPlatformService, attributes, PipelineUnknownPlatform); err != nil {
+		return nil, err
 	}
 	if reference, ok := attributes["softwareId"].(string); ok {
 		software_id, err := ResolveSoftwareID(s.SoftwareRepository, reference)

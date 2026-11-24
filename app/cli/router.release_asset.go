@@ -34,4 +34,7 @@ func (r Router) releaseAsset(root *cobra.Command) {
 		Use: "delete ID", Aliases: []string{"rm"}, Short: "Delete a release file", Args: ExactArgs(1, "ID"),
 		Flags: DeclareYes, Run: r.ReleaseAssetController.Destroy,
 	})
+	if r.BuildPlatformController != nil {
+		r.completeFlag(asset, "kind", r.BuildPlatformController.AssetKinds)
+	}
 }

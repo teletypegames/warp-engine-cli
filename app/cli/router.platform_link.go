@@ -38,4 +38,7 @@ func (r Router) platformLink(root *cobra.Command) {
 		Use: "delete ID", Aliases: []string{"rm"}, Short: "Delete a platform link", Args: ExactArgs(1, "ID"),
 		Flags: DeclareYes, Run: r.PlatformLinkController.Destroy,
 	})
+	if r.BuildPlatformController != nil {
+		r.completeFlag(link, "platform", r.BuildPlatformController.Platforms)
+	}
 }

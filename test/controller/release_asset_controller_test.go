@@ -39,12 +39,17 @@ func TestReleaseAssetController_Create_SendsKindAndPath(t *testing.T) {
 	assert.Equal(t, domain.Attributes{"kind": "html", "path": "/pong/html/index.html"}, got)
 }
 
-func TestReleaseAssetController_Create_RejectsUnknownKind(t *testing.T) {
-	svc := &mocksvc.MockReleaseAssetService{}
+func TestReleaseAssetController_Create_UnknownKindIsAUsageError(t *testing.T) {
+	var got domain.Attributes
+	svc := &mocksvc.MockReleaseAssetService{CreateFunc: func(release string, attributes domain.Attributes) (*domain.ReleaseAssetModel, error) {
+		got = attributes
+		return nil, &domain.ValueError{Field: "kind", Value: "amiga"}
+	}}
 
 	_, _, err := execute(cli.Router{ReleaseAssetController: cli.ReleaseAssetController{ReleaseAssetService: svc}},
 		"asset", "create", "42", "--kind", "amiga", "--path", "/x")
 
+	assert.Equal(t, "amiga", got["kind"])
 	assert.Equal(t, cli.ExitUsage, cli.ExitCode(err))
 }
 

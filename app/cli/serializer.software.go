@@ -39,7 +39,7 @@ func (s SoftwareSerializer) Fields() []FieldFlag {
 		{Flag: "desc", Key: "desc", Kind: KindNullable, Usage: "short description"},
 		{Flag: "story", Key: "story", Kind: KindNullable, Usage: "long description"},
 		{Flag: "license", Key: "license", Kind: KindNullable, Usage: "licence"},
-		{Flag: "platform", Key: "platform", Usage: "platform", Enum: domain.Platforms},
+		{Flag: "platform", Key: "platform", Usage: "platform, one of the server's"},
 		{Flag: "status", Key: "status", Kind: KindNullable, Usage: "a status key (see \"status list\")"},
 		{Flag: "category", Key: "category", Kind: KindNullable, Usage: "a category key; a new word is registered for review"},
 		{Flag: "highlighted", Key: "highlighted", Kind: KindBool, Usage: "show it first in the stores"},
@@ -60,7 +60,8 @@ func (s SoftwareSerializer) ScaffoldFields() []FieldFlag {
 	return []FieldFlag{
 		{Flag: "name", Key: "name", Usage: "software and repository name: a-z, 0-9 and dashes"},
 		{Flag: "title", Key: "title", Usage: "display name"},
-		{Flag: "platform", Key: "platform", Usage: "platform", Enum: domain.Platforms},
+		{Flag: "platform", Key: "platform", Usage: "platform, one of the server's"},
+		{Flag: "app", Key: "app", Usage: "the platform's app variant (golang: cli or gui); default: the platform's default"},
 		{Flag: "category", Key: "category", Kind: KindNullable, Usage: "a category key"},
 		{Flag: "description", Key: "description", Kind: KindNullable, Usage: "short description"},
 		{Flag: "license", Key: "license", Kind: KindNullable, Usage: "licence"},

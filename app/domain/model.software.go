@@ -1,9 +1,5 @@
 package domain
 
-// Platforms are the platforms a software can be built for, as the API
-// spells them.
-var Platforms = []string{"tic80", "ebitengine", "love", "c64", "plus4", "godot", "bevy", "phaser", "electron", "dos"}
-
 // SoftwareModel is one entry of the catalog: a game, demo or tool, with
 // the releases, images and links that belong to it.
 type SoftwareModel struct {
@@ -21,7 +17,7 @@ type SoftwareModel struct {
 	Story *string `json:"story"`
 	// License is the licence, or nil.
 	License *string `json:"license"`
-	// Platform is one of [Platforms].
+	// Platform is one of the server's platforms ([BuildPlatformModel]).
 	Platform string `json:"platform"`
 	// Status is a key of the software statuses ([SoftwareStatusModel]), or nil.
 	Status *string `json:"status"`

@@ -85,14 +85,55 @@ func TestSoftwareController_Update_SendsOnlyGivenFieldsAndNullForEmpty(t *testin
 	assert.Equal(t, domain.Attributes{"title": "Pong II", "author": nil, "highlighted": true}, got)
 }
 
-func TestSoftwareController_Create_RejectsUnknownPlatform(t *testing.T) {
-	svc := &mocksvc.MockSoftwareService{}
+func TestSoftwareController_Create_UnknownPlatformIsAUsageError(t *testing.T) {
+	var got domain.Attributes
+	svc := &mocksvc.MockSoftwareService{CreateFunc: func(attributes domain.Attributes) (*domain.SoftwareModel, error) {
+		got = attributes
+		return nil, &domain.ValueError{Field: "platform", Value: "atari", Allowed: []string{"c64"}}
+	}}
 
 	_, _, err := execute(cli.Router{SoftwareController: cli.SoftwareController{SoftwareService: svc}},
 		"software", "create", "--name", "x", "--title", "X", "--platform", "atari")
 
-	assert.Error(t, err)
+	assert.Equal(t, "atari", got["platform"])
+	assert.ErrorContains(t, err, "platform takes one of c64")
 	assert.Equal(t, cli.ExitUsage, cli.ExitCode(err))
+}
+
+func TestSoftwareController_Scaffold_SendsTheApp(t *testing.T) {
+	var got domain.Attributes
+	svc := &mocksvc.MockSoftwareService{ScaffoldFunc: func(attributes domain.Attributes) (*domain.ScaffoldModel, error) {
+		got = attributes
+		return &domain.ScaffoldModel{}, nil
+	}}
+
+	_, _, err := execute(cli.Router{SoftwareController: cli.SoftwareController{SoftwareService: svc}},
+		"software", "scaffold", "--name", "tool", "--title", "Tool", "--platform", "golang", "--app", "cli")
+
+	assert.NoError(t, err)
+	assert.Equal(t, domain.Attributes{"name": "tool", "title": "Tool", "platform": "golang", "app": "cli"}, got)
+}
+
+func TestSoftwareController_Complete_PlatformsAndApps(t *testing.T) {
+	platforms := &mocksvc.MockBuildPlatformService{
+		PlatformsFunc: func() []string { return []string{"c64", "golang", "godot"} },
+		AppsFunc: func(platform string) ([]string, bool) {
+			assert.Equal(t, "golang", platform)
+			return []string{"cli", "gui"}, true
+		},
+	}
+	router := cli.Router{
+		SoftwareController:      cli.SoftwareController{SoftwareService: &mocksvc.MockSoftwareService{}},
+		BuildPlatformController: cli.BuildPlatformController{BuildPlatformService: platforms},
+	}
+
+	stdout, _, err := execute(router, "__complete", "software", "create", "--platform", "go")
+	assert.NoError(t, err)
+	assert.Contains(t, stdout, "golang\ngodot\n")
+
+	stdout, _, err = execute(router, "__complete", "software", "scaffold", "--platform", "golang", "--app", "")
+	assert.NoError(t, err)
+	assert.Contains(t, stdout, "cli\ngui\n")
 }
 
 func TestSoftwareController_Destroy_NeedsYesWithoutTerminal(t *testing.T) {

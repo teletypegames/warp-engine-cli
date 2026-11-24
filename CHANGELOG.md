@@ -1,9 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
-For the Admin API of warp_engine 5.6.0.
+For the Admin API of warp_engine 5.10.0.
 
+- The platforms, asset kinds and app variants are no longer built into the command line: `--platform` (software create/update/scaffold, platform links, pipelines), the `--kind` of an asset and the new `--app` are checked against the server's public build description (`GET /build/platforms`), read once per run, so golang, batocera, retroarch, the golang `cli_*` kinds and any platform a host registers itself work. When the description cannot be read, only the shape of a value is checked and the server decides. A pipeline also takes `unknown`.
+- `software scaffold --app`: the platform's variant (golang `cli` or `gui`), sent as `app`; checked against the platform's variants.
+- Shell completion offers the server's platforms, asset kinds and the `--app` variants of the given `--platform`.
+- A value the server does not know exits with 2 (usage) before any request is sent.
 - `fork list|show|update|delete` (`update` alias `moderate`): the forks other engines announced, filtered by `--status` and `--software`, moderated to visible or hidden.
 - `link create|update` take `--kind link|source` and `--ref`; links show their kind, ref, whether they are public and the last verification.
 - `software create|update` take `--forks-allowed` and `--fork-of-engine|name|version|repo`, and show them.

@@ -24,7 +24,7 @@ func (s PlatformLinkSerializer) Filters() []FilterFlag {
 // Fields are the field flags of "platform-link create" and "platform-link update".
 func (s PlatformLinkSerializer) Fields() []FieldFlag {
 	return []FieldFlag{
-		{Flag: "platform", Key: "platform", Usage: "platform", Enum: domain.Platforms},
+		{Flag: "platform", Key: "platform", Usage: "platform, one of the server's"},
 		{Flag: "name", Key: "name", Usage: "the link's text"},
 		{Flag: "url", Key: "url", Usage: "where it points"},
 		{Flag: "position", Key: "position", Kind: KindInt, Usage: "order within the platform, lowest first"},

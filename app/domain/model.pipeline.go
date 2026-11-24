@@ -1,8 +1,9 @@
 package domain
 
-// PipelinePlatforms are the platforms a pipeline can be set to: the
-// [Platforms] and "unknown", for a repository the engine could not place.
-var PipelinePlatforms = append(append([]string{}, Platforms...), "unknown")
+// PipelineUnknownPlatform is the platform of a pipeline whose repository
+// the engine could not place; a pipeline takes it besides the server's
+// platforms.
+const PipelineUnknownPlatform = "unknown"
 
 // PipelineModel is one CI repository the engine knows: a repository on the
 // CI server, with the platform it builds for and the software it publishes.
@@ -17,7 +18,7 @@ type PipelineModel struct {
 	RepoName string `json:"repoName"`
 	// FullName is "owner/name".
 	FullName string `json:"fullName"`
-	// Platform is one of [PipelinePlatforms].
+	// Platform is one of the server's platforms or [PipelineUnknownPlatform].
 	Platform string `json:"platform"`
 	// Active tells whether the repository is still active on the CI server.
 	Active bool `json:"active"`

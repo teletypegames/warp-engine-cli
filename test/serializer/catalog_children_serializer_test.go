@@ -56,13 +56,14 @@ func TestReleaseAssetSerializer_ModelToTable_Empty(t *testing.T) {
 	assert.NotEmpty(t, table.Headers)
 }
 
-func TestReleaseAssetSerializer_RequestToAttributes_ChecksTheKind(t *testing.T) {
+func TestReleaseAssetSerializer_RequestToAttributes_PassesAnyKind(t *testing.T) {
 	serializer := cli.ReleaseAssetSerializer{}
-	flags := parse(t, serializer.Fields(), "--kind", "zx81")
+	flags := parse(t, serializer.Fields(), "--kind", "cli_linux_x64")
 
-	_, err := serializer.RequestToAttributes(flags)
+	attributes, err := serializer.RequestToAttributes(flags)
 
-	assert.Error(t, err)
+	assert.NoError(t, err)
+	assert.Equal(t, domain.Attributes{"kind": "cli_linux_x64"}, attributes)
 }
 
 func TestExternalLinkSerializer_ModelToTable_MapsFields(t *testing.T) {

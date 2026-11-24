@@ -45,8 +45,13 @@ func (r Router) software(root *cobra.Command) {
 	add(software, "", Route{
 		Use: "scaffold", Short: "Create a software with its git repository and CI pipeline", Args: ExactArgs(0),
 		Example: "  warp-engine software scaffold --name my-game --title \"My Game\" --platform tic80 --license MIT\n" +
+			"  warp-engine software scaffold --name my-tool --title \"My Tool\" --platform golang --app cli\n" +
 			"  warp-engine software scaffold --name pong-plus --title \"Pong+\" --platform love --fork-of-engine https://games.example.org --fork-of-name pong",
 		Flags: func(flags *pflag.FlagSet) { DeclareFields(flags, serializer.ScaffoldFields()) },
 		Run:   r.SoftwareController.Scaffold,
 	})
+	if r.BuildPlatformController != nil {
+		r.completeFlag(software, "platform", r.BuildPlatformController.Platforms)
+		r.completeFlag(software, "app", r.BuildPlatformController.Apps)
+	}
 }

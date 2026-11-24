@@ -117,6 +117,14 @@
 //
 //	warp-engine software update pong --data @pong.json --title "Pong II"
 //
+// The platforms (--platform), the kinds of a release file (--kind) and the
+// app variants of a platform (--app) are the server's own: the command line
+// reads them once per run from the server's public build description
+// (GET /build/platforms) and refuses any other value before sending
+// anything. When that description cannot be read, it only checks that the
+// value looks like a name (a-z, 0-9 and _) and leaves the rest to the
+// server. The shell completion offers the same values.
+//
 // delete, and every command that cannot be undone, asks first; --yes (-y)
 // answers for you, and without a terminal the command refuses to run
 // without it.
@@ -145,6 +153,11 @@
 //
 //	warp-engine software scaffold --name my-game --title "My Game" --platform tic80
 //
+// --app picks the platform's variant, for a platform that has them (golang:
+// cli or gui); without it the server takes the platform's default:
+//
+//	warp-engine software scaffold --name my-tool --title "My Tool" --platform golang --app cli
+//
 // It also takes --license, and the --fork-of-… flags to set up a fork of a
 // software on another engine (--fork-of-engine and --fork-of-name are
 // needed, --fork-of-version and --fork-of-repo are optional):
@@ -170,9 +183,10 @@
 // # Release files
 //
 // The files of a release, under asset, point into the artifact store: a kind
-// (cartridge, source, html, docs, win_x86, win_x64, linux_x86, linux_x64,
-// linux_arm64, mac_x64, mac_arm64, mac_universal) and an absolute path. A
-// download-only platform cannot have an html file.
+// and an absolute path. The kinds come from the server: every kind of every
+// platform and app variant it builds for (cartridge, source, html, docs,
+// win_x64, linux_x64, mac_arm64, cli_linux_x64 …). A download-only platform
+// cannot have an html file.
 //
 //	warp-engine asset list 42
 //	warp-engine asset show 7
@@ -290,8 +304,8 @@
 // A pipeline is a repository on the CI server that the engine knows: the
 // platform it builds for and the software its builds are published as.
 // "pipeline sync" reads the repositories from the CI server and prints what was
-// created, updated or deactivated. "pipeline update" sets the platform or the
-// software; --software takes an ID or a name, and "" detaches it. A software
+// created, updated or deactivated. "pipeline update" sets the platform (one of the
+// server's, or unknown) or the software; --software takes an ID or a name, and "" detaches it. A software
 // has one pipeline, so giving it to one pipeline takes it from the other.
 // "pipeline runs" lists the runs newest first, one page of the CI server's
 // listing at a time, and "pipeline trigger" starts a run, on main unless

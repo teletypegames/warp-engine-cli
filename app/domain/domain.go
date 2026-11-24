@@ -52,6 +52,9 @@ type Domain struct {
 	SyncEventService SyncEventServiceInterface
 	// ApplicationTokenService manages the application tokens.
 	ApplicationTokenService ApplicationTokenServiceInterface
+	// BuildPlatformService knows the server's platforms, asset kinds and app
+	// variants.
+	BuildPlatformService BuildPlatformServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -101,6 +104,8 @@ type Domain struct {
 	SyncEventRepository SyncEventRepositoryInterface
 	// ApplicationTokenRepository talks to the application_tokens resource.
 	ApplicationTokenRepository ApplicationTokenRepositoryInterface
+	// BuildPlatformRepository reads the server's build description.
+	BuildPlatformRepository BuildPlatformRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -131,6 +136,8 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	sync_pairing_repository := SyncPairingRepository{Client: client}
 	sync_event_repository := SyncEventRepository{Client: client}
 	application_token_repository := ApplicationTokenRepository{Client: client}
+	build_platform_repository := BuildPlatformRepository{Client: client}
+	build_platform_service := BuildPlatformService{BuildPlatformRepository: build_platform_repository, Cache: &BuildPlatformCache{}}
 
 	return Domain{
 		AuthService: AuthService{
@@ -139,19 +146,19 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 			LocalTokenRepository: local_token_repository,
 		},
 		ProfileService:          ProfileService{ProfileRepository: profile_repository},
-		SoftwareService:         SoftwareService{SoftwareRepository: software_repository},
+		SoftwareService:         SoftwareService{SoftwareRepository: software_repository, BuildPlatformService: build_platform_service},
 		RawService:              RawService{RawRepository: raw_repository},
 		ReleaseService:          ReleaseService{ReleaseRepository: release_repository, SoftwareRepository: software_repository},
-		ReleaseAssetService:     ReleaseAssetService{ReleaseAssetRepository: release_asset_repository},
+		ReleaseAssetService:     ReleaseAssetService{ReleaseAssetRepository: release_asset_repository, BuildPlatformService: build_platform_service},
 		ExternalLinkService:     ExternalLinkService{ExternalLinkRepository: external_link_repository, SoftwareRepository: software_repository},
 		ForkLinkService:         ForkLinkService{ForkLinkRepository: fork_link_repository, SoftwareRepository: software_repository},
 		SoftwareImageService:    SoftwareImageService{SoftwareImageRepository: software_image_repository, SoftwareRepository: software_repository},
 		ExtraService:            ExtraService{ExtraRepository: extra_repository, SoftwareRepository: software_repository},
 		SoftwareStatusService:   SoftwareStatusService{SoftwareStatusRepository: software_status_repository},
 		SoftwareCategoryService: SoftwareCategoryService{SoftwareCategoryRepository: software_category_repository},
-		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository},
+		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository, BuildPlatformService: build_platform_service},
 		DownloadService:         DownloadService{DownloadRepository: download_repository, SoftwareRepository: software_repository},
-		PipelineService:         PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository},
+		PipelineService:         PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository, BuildPlatformService: build_platform_service},
 		FileService:             FileService{FileRepository: file_repository},
 		RuntimeService:          RuntimeService{RuntimeRepository: runtime_repository},
 		LocalComponentService:   LocalComponentService{LocalComponentRepository: local_component_repository, SoftwareRepository: software_repository},
@@ -160,6 +167,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SyncPairingService:      SyncPairingService{SyncPairingRepository: sync_pairing_repository},
 		SyncEventService:        SyncEventService{SyncEventRepository: sync_event_repository, SoftwareRepository: software_repository},
 		ApplicationTokenService: ApplicationTokenService{ApplicationTokenRepository: application_token_repository},
+		BuildPlatformService:    build_platform_service,
 
 		AuthRepository:             auth_repository,
 		ProfileRepository:          profile_repository,
@@ -185,5 +193,6 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SyncPairingRepository:      sync_pairing_repository,
 		SyncEventRepository:        sync_event_repository,
 		ApplicationTokenRepository: application_token_repository,
+		BuildPlatformRepository:    build_platform_repository,
 	}
 }

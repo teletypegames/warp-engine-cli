@@ -39,6 +39,7 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		SyncPairingController:      SyncPairingController{SyncPairingService: d.SyncPairingService},
 		SyncEventController:        SyncEventController{SyncEventService: d.SyncEventService},
 		ApplicationTokenController: ApplicationTokenController{ApplicationTokenService: d.ApplicationTokenService},
+		BuildPlatformController:    BuildPlatformController{BuildPlatformService: d.BuildPlatformService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

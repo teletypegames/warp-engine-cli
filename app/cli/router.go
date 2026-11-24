@@ -90,6 +90,9 @@ type Router struct {
 	SyncEventController SyncEventControllerInterface
 	// ApplicationTokenController: token list|show|create|update|delete|rotate.
 	ApplicationTokenController ApplicationTokenControllerInterface
+	// BuildPlatformController: the shell completion of --platform, --kind
+	// and --app; nil completes nothing.
+	BuildPlatformController BuildPlatformControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -222,6 +225,28 @@ func add(parent *cobra.Command, group_id string, route Route) *cobra.Command {
 	}
 	parent.AddCommand(command)
 	return command
+}
+
+// completeFlag lets the shell complete flag, on every command under parent
+// that has it, with complete, once connected to the server the line names
+// (the completion command runs offline); without a server it offers
+// nothing.
+func (r Router) completeFlag(parent *cobra.Command, flag string, complete func(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)) {
+	for _, command := range parent.Commands() {
+		if command.Flags().Lookup(flag) != nil {
+			_ = command.RegisterFlagCompletionFunc(flag, r.connected(complete))
+		}
+	}
+}
+
+// connected wraps complete so that it runs connected to the server.
+func (r Router) connected(complete func(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)) cobra.CompletionFunc {
+	return func(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective) {
+		if err := r.AuthController.Connect(cmd, args); err != nil {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		}
+		return complete(cmd, args, to_complete)
+	}
 }
 
 // isOffline reports whether cmd runs without a connection: it is marked

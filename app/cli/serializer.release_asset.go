@@ -14,7 +14,7 @@ type ReleaseAssetSerializer struct{}
 // Fields are the field flags of "asset create" and "asset update".
 func (s ReleaseAssetSerializer) Fields() []FieldFlag {
 	return []FieldFlag{
-		{Flag: "kind", Key: "kind", Usage: "what the file is", Enum: domain.AssetKinds},
+		{Flag: "kind", Key: "kind", Usage: "what the file is: one of the kinds of the server's platforms"},
 		{Flag: "path", Key: "path", Usage: "absolute path of the file in the artifact store"},
 	}
 }

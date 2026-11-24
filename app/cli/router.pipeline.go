@@ -50,4 +50,7 @@ func (r Router) pipeline(root *cobra.Command) {
 		},
 		Run: r.PipelineController.Trigger,
 	})
+	if r.BuildPlatformController != nil {
+		r.completeFlag(pipeline, "platform", r.BuildPlatformController.PipelinePlatforms)
+	}
 }
