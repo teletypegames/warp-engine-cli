@@ -44,7 +44,7 @@ func (r MakefileRepository) Exists(directory string) bool {
 	return false
 }
 
-// Probe runs "make -n -C directory target". make -n prints the recipes
+// Probe runs "make -n target" in directory. make -n prints the recipes
 // instead of running them (lines that call $(MAKE) run, also with -n); a
 // "No rule to make target" naming target itself means the target is
 // missing, any other failure that it fails.
@@ -53,7 +53,8 @@ func (r MakefileRepository) Probe(directory string, target string) (string, stri
 	if program == "" {
 		program = "make"
 	}
-	command := exec.Command(program, "-n", "-C", directory, target)
+	command := exec.Command(program, "-n", target)
+	command.Dir = directory
 	var output bytes.Buffer
 	command.Stdout = &output
 	command.Stderr = &output

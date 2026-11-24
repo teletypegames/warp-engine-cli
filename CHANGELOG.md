@@ -1,6 +1,13 @@
 # Changelog
 
+## 0.3.1
+
+- `check makefile` runs make in the project's directory instead of with `-C`, so GNU make 4 no longer puts its "Leaving directory" line where the reason a target fails belongs.
+
 ## 0.3.0
+
+Tagged, but its pipeline failed on that test under GNU make 4, so it has no binaries; 0.3.1 is the release.
+
 
 - `release upload FILE…` and `release publish`: a release made outside the CI (the macOS packages of ebitengine, electron and golang gui programs), through the build endpoints `/build/upload` and `/build/publish` with an application token (upload and update scopes), the way the CI publishes. The upload streams each file and sends its SHA-256, which the server checks; file names must start with `NAME-VERSION`. `publish` takes `--platform`, `--app` and `--commit`. The server and token come from `--server`/`--token`, `WARP_SERVER`/`WARP_TOKEN` (the names the templates' `mac-release` target uses), `WARP_ENGINE_URL`/`WARP_ENGINE_TOKEN`, or the profile.
 - `check makefile [DIR]`: checks a project's Makefile against the shared contract of the WarpEngine templates — `build`, `run`, `check`, `clean`, plus `web` when the platform has a web build and `mac-release` when it has kinds the CI does not build (read from the server's `/build/platforms`, for the marker's app variant). Each target is tried with `make -n`; exits 1 when one is missing or fails. The platform comes from `.woodpecker.yaml` or `--platform`/`--app`.
