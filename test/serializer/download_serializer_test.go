@@ -87,3 +87,12 @@ func TestDownloadSerializer_StatsToRecord_ReleasesThenFiles(t *testing.T) {
 		{Name: "  pong.zip", Value: "30 (last 2026-11-18T09:00:00Z)"},
 	}, record)
 }
+
+func TestDownloadSerializer_FlagsToFilter_TakesTheOutletAndClientID(t *testing.T) {
+	serializer := cli.DownloadSerializer{}
+	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
+	cli.DeclareFilters(flags, serializer.Filters())
+	assert.NoError(t, flags.Parse([]string{"--outlet", "assembly64", "--client-id", "Ultimate"}))
+
+	assert.Equal(t, domain.Filter{"outlet": "assembly64", "clientId": "Ultimate"}, serializer.FlagsToFilter(flags))
+}

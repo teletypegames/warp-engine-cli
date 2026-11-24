@@ -1,7 +1,7 @@
 // Command warp-engine manages a WarpEngine server from the command line. It
 // speaks the server's Admin API: the catalog (softwares, releases, release
 // files, images, links, announced forks), its vocabulary (statuses, categories, platform
-// links), the download statistics, the pipelines, the artifact store, the
+// links), the download statistics, the outlets, the pipelines, the artifact store, the
 // runtimes, sync with other engines, the application tokens and, on
 // WarpEngine Local, the git server and CI that run beside it. Anything
 // without a command of its own is one "warp-engine api" call away.
@@ -304,11 +304,13 @@
 //
 // The server logs every file it serves. "download list" reads the log, newest
 // first, and filters it by substrings (--file-path, --software for the
-// software's title, --ip-address, --user-agent, --referer) and by time
-// (--from, inclusive, and --to, exclusive). Times are ISO 8601; a bare date
-// means its midnight UTC.
+// software's title, --ip-address, --user-agent, --referer, --client-id), by
+// the outlet it came through (--outlet, exact; none for the catalog API)
+// and by time (--from, inclusive, and --to, exclusive). Times are ISO 8601; a
+// bare date means its midnight UTC.
 //
 //	warp-engine download list --software ra --from 2026-11-01
+//	warp-engine download list --outlet assembly64 --client-id Ultimate
 //	warp-engine download list --file-path .d64 --all -o json
 //	warp-engine download show 1234
 //
@@ -320,6 +322,19 @@
 //	warp-engine download top-files --limit 20
 //	warp-engine download top-softwares
 //	warp-engine download stats blessing-of-ra
+//
+// # Outlets
+//
+// The formats the catalog leaves the engine in: the catalog API, the shelves,
+// an Assembly64 server and the host's own types. "outlet list" lists them,
+// the catalog API first; "outlet check" shows what one offers (a release and
+// kind per title) and which softwares it leaves out, and why; with --strict it
+// exits 1 when it leaves any out. A server whose outlet configuration is
+// invalid answers 409.
+//
+//	warp-engine outlet list
+//	warp-engine outlet check assembly64
+//	warp-engine outlet check c64 --strict
 //
 // # Pipelines
 //

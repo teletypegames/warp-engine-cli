@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+For the Admin API of warp_engine 5.11.0.
+
+- `outlet list` and `outlet check KEY` (`--strict` exits 1 when the outlet leaves a software out): the outlets and what each offers, the Admin API's `outlets` resource.
+- `download list` takes `--outlet` (exact; `none` for the catalog API) and `--client-id`, and a download shows its outlet and Client-Id.
+
 ## 0.3.1
 
 - `check makefile` runs make in the project's directory instead of with `-C`, so GNU make 4 no longer puts its "Leaving directory" line where the reason a target fails belongs.

@@ -34,6 +34,8 @@ type Domain struct {
 	PlatformLinkService PlatformLinkServiceInterface
 	// DownloadService reads the download log and its statistics.
 	DownloadService DownloadServiceInterface
+	// OutletService reads the outlets.
+	OutletService OutletServiceInterface
 	// PipelineService manages the CI pipelines.
 	PipelineService PipelineServiceInterface
 	// FileService manages the artifact store.
@@ -90,6 +92,8 @@ type Domain struct {
 	PlatformLinkRepository PlatformLinkRepositoryInterface
 	// DownloadRepository talks to the downloads resource.
 	DownloadRepository DownloadRepositoryInterface
+	// OutletRepository talks to the outlets resource.
+	OutletRepository OutletRepositoryInterface
 	// PipelineRepository talks to the pipelines resource.
 	PipelineRepository PipelineRepositoryInterface
 	// FileRepository talks to the files resource.
@@ -137,6 +141,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	software_category_repository := SoftwareCategoryRepository{Client: client}
 	platform_link_repository := PlatformLinkRepository{Client: client}
 	download_repository := DownloadRepository{Client: client}
+	outlet_repository := OutletRepository{Client: client}
 	pipeline_repository := PipelineRepository{Client: client}
 	file_repository := FileRepository{Client: client}
 	runtime_repository := RuntimeRepository{Client: client}
@@ -171,6 +176,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SoftwareCategoryService: SoftwareCategoryService{SoftwareCategoryRepository: software_category_repository},
 		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository, BuildPlatformService: build_platform_service},
 		DownloadService:         DownloadService{DownloadRepository: download_repository, SoftwareRepository: software_repository},
+		OutletService:           OutletService{OutletRepository: outlet_repository},
 		PipelineService:         PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository, BuildPlatformService: build_platform_service},
 		FileService:             FileService{FileRepository: file_repository},
 		RuntimeService:          RuntimeService{RuntimeRepository: runtime_repository},
@@ -203,6 +209,7 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SoftwareCategoryRepository: software_category_repository,
 		PlatformLinkRepository:     platform_link_repository,
 		DownloadRepository:         download_repository,
+		OutletRepository:           outlet_repository,
 		PipelineRepository:         pipeline_repository,
 		FileRepository:             file_repository,
 		RuntimeRepository:          runtime_repository,

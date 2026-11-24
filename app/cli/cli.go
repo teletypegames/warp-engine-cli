@@ -27,6 +27,7 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		SoftwareCategoryController: SoftwareCategoryController{SoftwareCategoryService: d.SoftwareCategoryService},
 		PlatformLinkController:     PlatformLinkController{PlatformLinkService: d.PlatformLinkService},
 		DownloadController:         DownloadController{DownloadService: d.DownloadService},
+		OutletController:           OutletController{OutletService: d.OutletService},
 		PipelineController:         PipelineController{PipelineService: d.PipelineService},
 		FileController:             FileController{FileService: d.FileService},
 		RuntimeController:          RuntimeController{RuntimeService: d.RuntimeService},

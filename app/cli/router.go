@@ -71,6 +71,8 @@ type Router struct {
 	PlatformLinkController PlatformLinkControllerInterface
 	// DownloadController: download list|show|summary|top-files|top-softwares|stats.
 	DownloadController DownloadControllerInterface
+	// OutletController: outlet list|check.
+	OutletController OutletControllerInterface
 	// PipelineController: pipeline list|show|update|sync|runs|trigger.
 	PipelineController PipelineControllerInterface
 	// FileController: file list|upload|rename|delete|mkdir.
@@ -171,6 +173,9 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.DownloadController != nil {
 		r.download(root)
+	}
+	if r.OutletController != nil {
+		r.outlet(root)
 	}
 	if r.PipelineController != nil {
 		r.pipeline(root)
