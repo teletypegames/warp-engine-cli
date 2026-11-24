@@ -40,6 +40,8 @@ func Start(d domain.Domain, args []string, stdout io.Writer, stderr io.Writer) i
 		SyncEventController:        SyncEventController{SyncEventService: d.SyncEventService},
 		ApplicationTokenController: ApplicationTokenController{ApplicationTokenService: d.ApplicationTokenService},
 		BuildPlatformController:    BuildPlatformController{BuildPlatformService: d.BuildPlatformService},
+		BuildController:            BuildController{BuildService: d.BuildService, AuthService: d.AuthService},
+		MakefileController:         MakefileController{MakefileService: d.MakefileService, AuthService: d.AuthService},
 	}.Init()
 	root.SetArgs(args)
 	root.SetOut(stdout)

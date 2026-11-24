@@ -111,10 +111,24 @@ func (c *Client) Upload(path string, fields map[string]string, file_field string
 	return c.send(http.MethodPost, AdminPrefix+path, nil, &buffer, writer.FormDataContentType(), out)
 }
 
-// send builds and runs one request and reads its answer; see [Client.Do].
+// send builds and runs one request with the bearer token and reads its
+// answer; see [Client.Do].
 func (c *Client) send(method string, path string, query url.Values, body io.Reader, content_type string, out any) error {
+	request, err := c.prepare(method, path, query, body, content_type)
+	if err != nil {
+		return err
+	}
+	if c.Token != "" {
+		request.Header.Set("Authorization", "Bearer "+c.Token)
+	}
+	return c.exchange(c.HTTP, request, method, path, out)
+}
+
+// prepare builds a request to the engine path with the headers every
+// request has; [ErrNoServer] without a BaseURL.
+func (c *Client) prepare(method string, path string, query url.Values, body io.Reader, content_type string) (*http.Request, error) {
 	if c.BaseURL == "" {
-		return ErrNoServer
+		return nil, ErrNoServer
 	}
 	address := c.BaseURL + path
 	if len(query) > 0 {
@@ -122,7 +136,7 @@ func (c *Client) send(method string, path string, query url.Values, body io.Read
 	}
 	request, err := http.NewRequest(method, address, body)
 	if err != nil {
-		return fmt.Errorf("%s %s: %w", method, path, err)
+		return nil, fmt.Errorf("%s %s: %w", method, path, err)
 	}
 	request.Header.Set("Accept", "application/json")
 	if content_type != "" {
@@ -131,11 +145,13 @@ func (c *Client) send(method string, path string, query url.Values, body io.Read
 	if c.UserAgent != "" {
 		request.Header.Set("User-Agent", c.UserAgent)
 	}
-	if c.Token != "" {
-		request.Header.Set("Authorization", "Bearer "+c.Token)
-	}
+	return request, nil
+}
 
-	response, err := c.HTTP.Do(request)
+// exchange runs request with client and reads its answer into out; see
+// [Client.Do].
+func (c *Client) exchange(client *http.Client, request *http.Request, method string, path string, out any) error {
+	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("%s %s: %w", method, path, err)
 	}

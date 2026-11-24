@@ -7,6 +7,12 @@ artifact store, runtimes, downloads, sync with other engines, application
 tokens and the components of WarpEngine Local. Every list pages or reads
 everything, every command prints a table or, with `-o json`, JSON.
 
+It also releases what the CI cannot build — `warp-engine release upload` and
+`release publish` send the macOS packages of a game with an application token
+(`WARP_SERVER`, `WARP_TOKEN`), which the `mac-release` target of the WarpEngine
+templates runs — and checks a project's Makefile against the templates' shared
+contract (`warp-engine check makefile`).
+
 ## Install
 
 macOS and Linux:

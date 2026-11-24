@@ -93,6 +93,10 @@ type Router struct {
 	// BuildPlatformController: the shell completion of --platform, --kind
 	// and --app; nil completes nothing.
 	BuildPlatformController BuildPlatformControllerInterface
+	// BuildController: release upload|publish.
+	BuildController BuildControllerInterface
+	// MakefileController: check makefile.
+	MakefileController MakefileControllerInterface
 }
 
 // Init returns the root command with every command under it.
@@ -191,6 +195,12 @@ func (r Router) Init() *cobra.Command {
 	}
 	if r.ApplicationTokenController != nil {
 		r.applicationToken(root)
+	}
+	if r.BuildController != nil {
+		r.build(root)
+	}
+	if r.MakefileController != nil {
+		r.makefile(root)
 	}
 	return root
 }

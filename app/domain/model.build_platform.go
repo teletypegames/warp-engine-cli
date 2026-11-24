@@ -21,6 +21,9 @@ type BuildPlatformModel struct {
 type BuildKindModel struct {
 	// Name is the kind as the API spells it ("cartridge", "cli_linux_x64" …).
 	Name string `json:"name"`
+	// Built is false for a kind the CI does not build, which is uploaded by
+	// hand (the macOS packages, signed only on a Mac).
+	Built bool `json:"built"`
 }
 
 // BuildAppModel is one variant of a [BuildPlatformModel].

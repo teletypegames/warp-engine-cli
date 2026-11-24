@@ -55,6 +55,10 @@ type Domain struct {
 	// BuildPlatformService knows the server's platforms, asset kinds and app
 	// variants.
 	BuildPlatformService BuildPlatformServiceInterface
+	// BuildService releases files through the build endpoints.
+	BuildService BuildServiceInterface
+	// MakefileService checks a project's Makefile against the contract.
+	MakefileService MakefileServiceInterface
 
 	// AuthRepository talks to the sign-in endpoints.
 	AuthRepository AuthRepositoryInterface
@@ -106,6 +110,12 @@ type Domain struct {
 	ApplicationTokenRepository ApplicationTokenRepositoryInterface
 	// BuildPlatformRepository reads the server's build description.
 	BuildPlatformRepository BuildPlatformRepositoryInterface
+	// BuildRepository talks to the build endpoints.
+	BuildRepository BuildRepositoryInterface
+	// MakefileRepository asks make about a Makefile.
+	MakefileRepository MakefileRepositoryInterface
+	// ProjectRepository reads a project's CI marker.
+	ProjectRepository ProjectRepositoryInterface
 }
 
 // NewDomain wires the repositories and services around client (shared by
@@ -137,6 +147,9 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	sync_event_repository := SyncEventRepository{Client: client}
 	application_token_repository := ApplicationTokenRepository{Client: client}
 	build_platform_repository := BuildPlatformRepository{Client: client}
+	build_repository := BuildRepository{Client: client}
+	makefile_repository := MakefileRepository{}
+	project_repository := ProjectRepository{}
 	build_platform_service := BuildPlatformService{BuildPlatformRepository: build_platform_repository, Cache: &BuildPlatformCache{}}
 
 	return Domain{
@@ -168,6 +181,12 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SyncEventService:        SyncEventService{SyncEventRepository: sync_event_repository, SoftwareRepository: software_repository},
 		ApplicationTokenService: ApplicationTokenService{ApplicationTokenRepository: application_token_repository},
 		BuildPlatformService:    build_platform_service,
+		BuildService:            BuildService{BuildRepository: build_repository, BuildPlatformService: build_platform_service},
+		MakefileService: MakefileService{
+			MakefileRepository:      makefile_repository,
+			ProjectRepository:       project_repository,
+			BuildPlatformRepository: build_platform_repository,
+		},
 
 		AuthRepository:             auth_repository,
 		ProfileRepository:          profile_repository,
@@ -194,5 +213,8 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		SyncEventRepository:        sync_event_repository,
 		ApplicationTokenRepository: application_token_repository,
 		BuildPlatformRepository:    build_platform_repository,
+		BuildRepository:            build_repository,
+		MakefileRepository:         makefile_repository,
+		ProjectRepository:          project_repository,
 	}
 }

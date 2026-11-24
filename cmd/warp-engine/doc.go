@@ -180,6 +180,28 @@
 //	warp-engine release update 42 --version 1.2.1
 //	warp-engine release delete 42 --yes
 //
+// # Releasing by hand
+//
+// Some packages the CI cannot build: the macOS ones of ebitengine, electron
+// and golang gui programs are built and signed on a Mac. "release upload"
+// sends them into the release's folder, as the CI's upload step does, and
+// "release publish" registers the release again, which keeps the files the
+// CI uploaded and adds the new ones. Every file name starts with
+// NAME-VERSION; the command sends each file's SHA-256, which the server
+// checks. The mac-release target of the WarpEngine templates runs both.
+//
+// These commands talk to the build endpoints (/build/upload, /build/publish),
+// not to the Admin API: they take an application token with the upload
+// (upload) and the update (publish) scope, the one the CI publishes with. The
+// server is --server, else WARP_SERVER, else WARP_ENGINE_URL, else the
+// profile; the token --token, else WARP_TOKEN, else WARP_ENGINE_TOKEN, else
+// the profile's.
+//
+//	export WARP_SERVER=https://teletypegames.org WARP_TOKEN=we_xxxxxxxx
+//	warp-engine release upload --name pong --version 1.2.0 pong-1.2.0-mac-x64.zip pong-1.2.0-mac-arm64.zip
+//	warp-engine release publish --name pong --version 1.2.0 --platform ebitengine
+//	warp-engine release publish --name gio-demo --version 0.3.0 --platform golang --app gui
+//
 // # Release files
 //
 // The files of a release, under asset, point into the artifact store: a kind
@@ -442,6 +464,25 @@
 //	warp-engine local operation 12 --wait
 //	warp-engine local remove woodpecker --purge --yes
 //
+// # Checking a Makefile
+//
+// The Makefiles of the WarpEngine templates share a contract: build, run,
+// check (the CI's check step runs it) and clean in every project; web when
+// the platform's releases have a web build; mac-release when the platform
+// has kinds the CI does not build. "check makefile" tries each target the
+// project in DIR (the current directory without it) needs with make -n,
+// which builds nothing, prints them with their state (ok, missing, fails)
+// and exits with 1 when one is missing or fails.
+//
+// The platform and its variant come from the CI marker (.woodpecker.yaml
+// "platform:" and "app:"), or --platform and --app; which kinds the platform
+// has, from the server found as for "release upload". Without a server only
+// the four targets every project has are checked, and a note says so.
+//
+//	warp-engine check makefile
+//	warp-engine check makefile ../pong --server https://teletypegames.org
+//	warp-engine check makefile . --platform golang --app gui -o json
+//
 // # Any request
 //
 // "api" sends any request, signed in like every other command, and prints
@@ -500,6 +541,8 @@
 //	WARP_ENGINE_PROFILE    the profile to use (--profile)
 //	WARP_ENGINE_CONFIG     the configuration file
 //	WARP_ENGINE_LOCAL_DIR  WarpEngine Local's data directory (~/.warpengine)
+//	WARP_SERVER            the server of "release upload|publish" and "check makefile", before WARP_ENGINE_URL
+//	WARP_TOKEN             the token of "release upload|publish", before WARP_ENGINE_TOKEN
 //
 // WARP_ENGINE_URL and WARP_ENGINE_TOKEN mean the same to warp-engine-mcp, the
 // MCP server of the same family.
