@@ -11,7 +11,7 @@ func (r Router) raw(root *cobra.Command) {
 		Use: "api METHOD PATH", Short: "Send any request to the Admin API and print the answer",
 		Long: `Send any request to the server and print its JSON answer as it came.
 
-PATH is relative to the Admin API (/softwares means /api/admin/v1/softwares);
+PATH is relative to the Admin API (/softwares means /api/admin/v2/softwares);
 a path under /api/ or /.well-known/ is taken from the server's root. The
 request is signed in like every other command. For what has no command of its
 own, and to see the raw answers; the API's contract is GET /openapi.json.`,

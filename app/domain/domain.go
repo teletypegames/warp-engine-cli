@@ -18,10 +18,12 @@ type Domain struct {
 	ReleaseService ReleaseServiceInterface
 	// ReleaseAssetService manages the files of the releases.
 	ReleaseAssetService ReleaseAssetServiceInterface
-	// ExternalLinkService manages the external links.
-	ExternalLinkService ExternalLinkServiceInterface
-	// ForkLinkService moderates the forks other engines announced.
-	ForkLinkService ForkLinkServiceInterface
+	// SoftwareLinkService manages the links of the softwares.
+	SoftwareLinkService SoftwareLinkServiceInterface
+	// SoftwareSourceService manages the source repositories of the softwares.
+	SoftwareSourceService SoftwareSourceServiceInterface
+	// SoftwareForkService moderates the forks other engines announced.
+	SoftwareForkService SoftwareForkServiceInterface
 	// SoftwareImageService manages the images of the softwares.
 	SoftwareImageService SoftwareImageServiceInterface
 	// ExtraService manages the host's additional resources of the softwares.
@@ -34,18 +36,18 @@ type Domain struct {
 	PlatformLinkService PlatformLinkServiceInterface
 	// DownloadService reads the download log and its statistics.
 	DownloadService DownloadServiceInterface
-	// OutletService reads the outlets.
-	OutletService OutletServiceInterface
-	// PipelineService manages the CI pipelines.
-	PipelineService PipelineServiceInterface
+	// FeedService reads the feeds.
+	FeedService FeedServiceInterface
+	// CiRepositoryService manages the CI pipelines.
+	CiRepositoryService CiRepositoryServiceInterface
 	// FileService manages the artifact store.
 	FileService FileServiceInterface
 	// RuntimeService manages the runtimes.
 	RuntimeService RuntimeServiceInterface
-	// LocalComponentService manages the components of WarpEngine Local.
-	LocalComponentService LocalComponentServiceInterface
-	// LocalOperationService follows the background jobs of WarpEngine Local.
-	LocalOperationService LocalOperationServiceInterface
+	// LocalProviderService manages the components of WarpEngine Local.
+	LocalProviderService LocalProviderServiceInterface
+	// LocalTaskService follows the background jobs of WarpEngine Local.
+	LocalTaskService LocalTaskServiceInterface
 	// SyncPeerService manages the sync peers.
 	SyncPeerService SyncPeerServiceInterface
 	// SyncPairingService manages the caller's own sync pairings.
@@ -76,10 +78,12 @@ type Domain struct {
 	ReleaseRepository ReleaseRepositoryInterface
 	// ReleaseAssetRepository talks to the release assets resource.
 	ReleaseAssetRepository ReleaseAssetRepositoryInterface
-	// ExternalLinkRepository talks to the external links resource.
-	ExternalLinkRepository ExternalLinkRepositoryInterface
-	// ForkLinkRepository talks to the fork_links resource.
-	ForkLinkRepository ForkLinkRepositoryInterface
+	// SoftwareLinkRepository talks to the links resource.
+	SoftwareLinkRepository SoftwareLinkRepositoryInterface
+	// SoftwareSourceRepository talks to the source of a software.
+	SoftwareSourceRepository SoftwareSourceRepositoryInterface
+	// SoftwareForkRepository talks to the forks resource.
+	SoftwareForkRepository SoftwareForkRepositoryInterface
 	// SoftwareImageRepository talks to the software images resource.
 	SoftwareImageRepository SoftwareImageRepositoryInterface
 	// ExtraRepository talks to the extras resource.
@@ -92,18 +96,18 @@ type Domain struct {
 	PlatformLinkRepository PlatformLinkRepositoryInterface
 	// DownloadRepository talks to the downloads resource.
 	DownloadRepository DownloadRepositoryInterface
-	// OutletRepository talks to the outlets resource.
-	OutletRepository OutletRepositoryInterface
-	// PipelineRepository talks to the pipelines resource.
-	PipelineRepository PipelineRepositoryInterface
+	// FeedRepository talks to the feeds resource.
+	FeedRepository FeedRepositoryInterface
+	// CiRepositoryRepository talks to the ci_repositories resource.
+	CiRepositoryRepository CiRepositoryRepositoryInterface
 	// FileRepository talks to the files resource.
 	FileRepository FileRepositoryInterface
 	// RuntimeRepository talks to the runtimes resource.
 	RuntimeRepository RuntimeRepositoryInterface
-	// LocalComponentRepository talks to the local_components resource.
-	LocalComponentRepository LocalComponentRepositoryInterface
-	// LocalOperationRepository talks to the local_operations resource.
-	LocalOperationRepository LocalOperationRepositoryInterface
+	// LocalProviderRepository talks to the local_providers resource.
+	LocalProviderRepository LocalProviderRepositoryInterface
+	// LocalTaskRepository talks to the local_tasks resource.
+	LocalTaskRepository LocalTaskRepositoryInterface
 	// SyncPeerRepository talks to the sync_peers resource.
 	SyncPeerRepository SyncPeerRepositoryInterface
 	// SyncPairingRepository talks to the sync_pairings resource.
@@ -133,20 +137,21 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 	raw_repository := RawRepository{Client: client}
 	release_repository := ReleaseRepository{Client: client}
 	release_asset_repository := ReleaseAssetRepository{Client: client}
-	external_link_repository := ExternalLinkRepository{Client: client}
-	fork_link_repository := ForkLinkRepository{Client: client}
+	software_link_repository := SoftwareLinkRepository{Client: client}
+	software_source_repository := SoftwareSourceRepository{Client: client}
+	software_fork_repository := SoftwareForkRepository{Client: client}
 	software_image_repository := SoftwareImageRepository{Client: client}
 	extra_repository := ExtraRepository{Client: client}
 	software_status_repository := SoftwareStatusRepository{Client: client}
 	software_category_repository := SoftwareCategoryRepository{Client: client}
 	platform_link_repository := PlatformLinkRepository{Client: client}
 	download_repository := DownloadRepository{Client: client}
-	outlet_repository := OutletRepository{Client: client}
-	pipeline_repository := PipelineRepository{Client: client}
+	feed_repository := FeedRepository{Client: client}
+	ci_repository_repository := CiRepositoryRepository{Client: client}
 	file_repository := FileRepository{Client: client}
 	runtime_repository := RuntimeRepository{Client: client}
-	local_component_repository := LocalComponentRepository{Client: client}
-	local_operation_repository := LocalOperationRepository{Client: client}
+	local_provider_repository := LocalProviderRepository{Client: client}
+	local_task_repository := LocalTaskRepository{Client: client}
 	sync_peer_repository := SyncPeerRepository{Client: client}
 	sync_pairing_repository := SyncPairingRepository{Client: client}
 	sync_event_repository := SyncEventRepository{Client: client}
@@ -168,20 +173,21 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		RawService:              RawService{RawRepository: raw_repository},
 		ReleaseService:          ReleaseService{ReleaseRepository: release_repository, SoftwareRepository: software_repository},
 		ReleaseAssetService:     ReleaseAssetService{ReleaseAssetRepository: release_asset_repository, BuildPlatformService: build_platform_service},
-		ExternalLinkService:     ExternalLinkService{ExternalLinkRepository: external_link_repository, SoftwareRepository: software_repository},
-		ForkLinkService:         ForkLinkService{ForkLinkRepository: fork_link_repository, SoftwareRepository: software_repository},
+		SoftwareLinkService:     SoftwareLinkService{SoftwareLinkRepository: software_link_repository, SoftwareRepository: software_repository},
+		SoftwareSourceService:   SoftwareSourceService{SoftwareSourceRepository: software_source_repository, SoftwareRepository: software_repository},
+		SoftwareForkService:     SoftwareForkService{SoftwareForkRepository: software_fork_repository, SoftwareRepository: software_repository},
 		SoftwareImageService:    SoftwareImageService{SoftwareImageRepository: software_image_repository, SoftwareRepository: software_repository},
 		ExtraService:            ExtraService{ExtraRepository: extra_repository, SoftwareRepository: software_repository},
 		SoftwareStatusService:   SoftwareStatusService{SoftwareStatusRepository: software_status_repository},
 		SoftwareCategoryService: SoftwareCategoryService{SoftwareCategoryRepository: software_category_repository},
 		PlatformLinkService:     PlatformLinkService{PlatformLinkRepository: platform_link_repository, BuildPlatformService: build_platform_service},
 		DownloadService:         DownloadService{DownloadRepository: download_repository, SoftwareRepository: software_repository},
-		OutletService:           OutletService{OutletRepository: outlet_repository},
-		PipelineService:         PipelineService{PipelineRepository: pipeline_repository, SoftwareRepository: software_repository, BuildPlatformService: build_platform_service},
+		FeedService:             FeedService{FeedRepository: feed_repository},
+		CiRepositoryService:     CiRepositoryService{CiRepositoryRepository: ci_repository_repository, SoftwareRepository: software_repository, BuildPlatformService: build_platform_service},
 		FileService:             FileService{FileRepository: file_repository},
 		RuntimeService:          RuntimeService{RuntimeRepository: runtime_repository},
-		LocalComponentService:   LocalComponentService{LocalComponentRepository: local_component_repository, SoftwareRepository: software_repository},
-		LocalOperationService:   LocalOperationService{LocalOperationRepository: local_operation_repository},
+		LocalProviderService:    LocalProviderService{LocalProviderRepository: local_provider_repository, SoftwareRepository: software_repository},
+		LocalTaskService:        LocalTaskService{LocalTaskRepository: local_task_repository},
 		SyncPeerService:         SyncPeerService{SyncPeerRepository: sync_peer_repository},
 		SyncPairingService:      SyncPairingService{SyncPairingRepository: sync_pairing_repository},
 		SyncEventService:        SyncEventService{SyncEventRepository: sync_event_repository, SoftwareRepository: software_repository},
@@ -201,20 +207,21 @@ func NewDomain(client *api.Client, config_path string, local_directory string) D
 		RawRepository:              raw_repository,
 		ReleaseRepository:          release_repository,
 		ReleaseAssetRepository:     release_asset_repository,
-		ExternalLinkRepository:     external_link_repository,
-		ForkLinkRepository:         fork_link_repository,
+		SoftwareLinkRepository:     software_link_repository,
+		SoftwareSourceRepository:   software_source_repository,
+		SoftwareForkRepository:     software_fork_repository,
 		SoftwareImageRepository:    software_image_repository,
 		ExtraRepository:            extra_repository,
 		SoftwareStatusRepository:   software_status_repository,
 		SoftwareCategoryRepository: software_category_repository,
 		PlatformLinkRepository:     platform_link_repository,
 		DownloadRepository:         download_repository,
-		OutletRepository:           outlet_repository,
-		PipelineRepository:         pipeline_repository,
+		FeedRepository:             feed_repository,
+		CiRepositoryRepository:     ci_repository_repository,
 		FileRepository:             file_repository,
 		RuntimeRepository:          runtime_repository,
-		LocalComponentRepository:   local_component_repository,
-		LocalOperationRepository:   local_operation_repository,
+		LocalProviderRepository:    local_provider_repository,
+		LocalTaskRepository:        local_task_repository,
 		SyncPeerRepository:         sync_peer_repository,
 		SyncPairingRepository:      sync_pairing_repository,
 		SyncEventRepository:        sync_event_repository,

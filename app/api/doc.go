@@ -9,7 +9,7 @@
 // (https://games.example.org, or http://127.0.0.1:7470 for WarpEngine Local).
 // Two families of paths hang off it:
 //
-//   - the Admin API under [AdminPrefix] (/api/admin/v1), reached with
+//   - the Admin API under [AdminPrefix] (/api/admin/v2), reached with
 //     [Client.Admin], [List], [Get], [Send] and [Delete];
 //   - the engine's own endpoints (/.well-known/warp-engine, /api/auth/…),
 //     reached with [Client.Do].

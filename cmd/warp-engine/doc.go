@@ -1,9 +1,9 @@
 // Command warp-engine manages a WarpEngine server from the command line. It
 // speaks the server's Admin API: the catalog (softwares, releases, release
-// files, images, links, announced forks), its vocabulary (statuses, categories, platform
-// links), the download statistics, the outlets, the pipelines, the artifact store, the
-// runtimes, sync with other engines, the application tokens and, on
-// WarpEngine Local, the git server and CI that run beside it. Anything
+// files, images, links, sources, announced forks), its vocabulary (statuses, categories,
+// platform links), the download statistics, the feeds, the CI repositories, the artifact
+// store, the runtimes, sync with other engines, the application tokens and, on
+// WarpEngine Local, the providers (git server and CI) that run beside it. Anything
 // without a command of its own is one "warp-engine api" call away.
 //
 // This page is the manual. The packages of the program are documented
@@ -26,7 +26,7 @@
 //
 // Both take two environment variables:
 //
-//   - VERSION: a release tag such as v0.1.0; the latest release by default.
+//   - VERSION: a release tag such as v1.0.0; the latest release by default.
 //   - INSTALL_DIR: where the binary goes.
 //
 // Run the line again to update. The binaries are on the release page of the
@@ -96,7 +96,7 @@
 //
 // Commands are a noun and a verb: "warp-engine software list". The verbs of
 // a record are list (ls), show, create, update and delete (rm); a resource's
-// own actions keep their names (pipeline trigger, token rotate). "--help"
+// own actions keep their names (ci-repo trigger, token rotate). "--help"
 // on any command lists its flags, and "warp-engine completion bash|zsh|fish|
 // powershell" prints a completion script.
 //
@@ -135,21 +135,21 @@
 //
 //	warp-engine software list --platform c64 --status released
 //	warp-engine software list --query ra --sort -updatedAt --all
-//	warp-engine software show pong --include releases,images,externalLinks,extras
+//	warp-engine software show pong --include releases,images,links,extras
 //	warp-engine software create --name pong --title Pong --platform love --author "Teletype Games"
-//	warp-engine software update pong --category arcade --shelf-name PONG
+//	warp-engine software update pong --category arcade --directory-name PONG
 //	warp-engine software delete pong --yes
 //
 // --forks-allowed lets the developer tools offer to fork a software (it needs
-// a public source link); a fork names its parent with --fork-of-engine,
+// a public source, see Sources); a fork names its parent with --fork-of-engine,
 // --fork-of-name, --fork-of-version and --fork-of-repo:
 //
 //	warp-engine software update pong --forks-allowed
 //	warp-engine software update pong-plus --fork-of-engine https://games.example.org --fork-of-name pong
 //
 // "software scaffold" sets a new software up from nothing on a server that
-// has a forge and a CI: the catalog entry, its git repository and its
-// pipeline, and prints the repository's addresses:
+// has a git server and a CI: the catalog entry, its git repository and its
+// CI repository, and prints the repository's addresses:
 //
 //	warp-engine software scaffold --name my-game --title "My Game" --platform tic80
 //
@@ -206,7 +206,7 @@
 //
 // The files of a release, under asset, point into the artifact store: a kind
 // and an absolute path. The kinds come from the server: every kind of every
-// platform and app variant it builds for (cartridge, source, html, docs,
+// platform and app variant it builds for (package, source, html, docs,
 // win_x64, linux_x64, mac_arm64, cli_linux_x64 …). A download-only platform
 // cannot have an html file.
 //
@@ -218,25 +218,35 @@
 //
 // # Links
 //
-// The external links of a software, under link: its source repository, a store
-// page, a video. --kind is link (the default) or source: the software's git
-// repository, one per software, with --ref naming a branch or tag (empty for
-// the default branch). The server checks a source link and shows whether it
-// is public, when it checked and why the check failed.
+// The plain links of a software, under link: a store page, a video, a manual.
+// The source repository is not a link: see Sources.
 //
 //	warp-engine link list pong
-//	warp-engine link create pong --label Source --url https://git.example.org/games/pong --kind source
-//	warp-engine link update 5 --label "Source code" --ref v1.2.0
+//	warp-engine link create pong --label Store --url https://store.example.org/pong
+//	warp-engine link update 5 --label "Store page"
 //	warp-engine link delete 5 --yes
+//
+// # Sources
+//
+// The source of a software, under source: its git repository, one per
+// software, with --ref naming a branch or tag (empty for the default branch).
+// "source set" replaces it as a whole, so it needs --url. The server checks the
+// source and shows whether it is public, when it checked and why the check
+// failed; forks start from it.
+//
+//	warp-engine source show pong
+//	warp-engine source set pong --url https://git.example.org/games/pong --ref v1.2.0
+//	warp-engine source delete pong --yes
 //
 // # Forks
 //
 // When another engine forks one of the softwares here, it announces the fork,
-// and the announcement waits as a pending fork link until it is moderated:
+// and the announcement waits as a pending fork until it is moderated:
 // visible lists the fork with its parent, hidden keeps it out; gone is a fork
 // its engine no longer has. list filters on --status and --software (an ID or
 // a name) and sorts by createdAt or checkedAt; update (alias moderate) sets
-// the status. delete removes the link, but a new announcement brings it back
+// the status. A fork shows its engine's URL, its name and title there.
+// delete removes the record, but a new announcement brings it back
 // as pending.
 //
 //	warp-engine fork list --status pending
@@ -305,12 +315,12 @@
 // The server logs every file it serves. "download list" reads the log, newest
 // first, and filters it by substrings (--file-path, --software for the
 // software's title, --ip-address, --user-agent, --referer, --client-id), by
-// the outlet it came through (--outlet, exact; none for the catalog API)
+// the feed it came through (--feed, exact; none for the catalog API)
 // and by time (--from, inclusive, and --to, exclusive). Times are ISO 8601; a
 // bare date means its midnight UTC.
 //
 //	warp-engine download list --software ra --from 2026-11-01
-//	warp-engine download list --outlet assembly64 --client-id Ultimate
+//	warp-engine download list --feed assembly64 --client-id Ultimate
 //	warp-engine download list --file-path .d64 --all -o json
 //	warp-engine download show 1234
 //
@@ -323,36 +333,37 @@
 //	warp-engine download top-softwares
 //	warp-engine download stats blessing-of-ra
 //
-// # Outlets
+// # Feeds
 //
-// The formats the catalog leaves the engine in: the catalog API, the shelves,
-// an Assembly64 server and the host's own types. "outlet list" lists them,
-// the catalog API first; "outlet check" shows what one offers (a release and
+// The formats the catalog leaves the engine in: the catalog API, the directories,
+// an Assembly64 server and the host's own types. "feed list" lists them,
+// the catalog API first; "feed check" shows what one offers (a release and
 // kind per title) and which softwares it leaves out, and why; with --strict it
-// exits 1 when it leaves any out. A server whose outlet configuration is
+// exits 1 when it leaves any out. A server whose feed configuration is
 // invalid answers 409.
 //
-//	warp-engine outlet list
-//	warp-engine outlet check assembly64
-//	warp-engine outlet check c64 --strict
+//	warp-engine feed list
+//	warp-engine feed check assembly64
+//	warp-engine feed check c64 --strict
 //
-// # Pipelines
+// # CI repositories
 //
-// A pipeline is a repository on the CI server that the engine knows: the
-// platform it builds for and the software its builds are published as.
-// "pipeline sync" reads the repositories from the CI server and prints what was
-// created, updated or deactivated. "pipeline update" sets the platform (one of the
-// server's, or unknown) or the software; --software takes an ID or a name, and "" detaches it. A software
-// has one pipeline, so giving it to one pipeline takes it from the other.
-// "pipeline runs" lists the runs newest first, one page of the CI server's
-// listing at a time, and "pipeline trigger" starts a run, on main unless
-// --branch says otherwise.
+// A CI repository is a repository on the CI server that the engine knows: the
+// platform it builds for and the software its builds are published as, under
+// ci-repo (aliases ci-repos, ci-repository). "ci-repo sync" reads the
+// repositories from the CI server and prints what was created, updated or
+// deactivated. "ci-repo update" sets the platform (one of the server's, or
+// unknown) or the software; --software takes an ID or a name, and "" detaches
+// it. A software has one CI repository, so giving it to one takes it from the
+// other. "ci-repo runs" lists its pipeline runs newest first, one page of the
+// CI server's listing at a time, and "ci-repo trigger" starts a run, on main
+// unless --branch says otherwise.
 //
-//	warp-engine pipeline list --platform c64 --active
-//	warp-engine pipeline sync
-//	warp-engine pipeline update 4 --software blessing-of-ra --platform c64
-//	warp-engine pipeline runs 4 --page 2
-//	warp-engine pipeline trigger 4 --branch develop
+//	warp-engine ci-repo list --platform c64 --active
+//	warp-engine ci-repo sync
+//	warp-engine ci-repo update 4 --software blessing-of-ra --platform c64
+//	warp-engine ci-repo runs 4 --page 2
+//	warp-engine ci-repo trigger 4 --branch develop
 //
 // # Files
 //
@@ -434,14 +445,14 @@
 //
 // # Application tokens
 //
-// Application tokens are what programs sign in with: pipelines publishing
+// Application tokens are what programs sign in with: CI pipelines publishing
 // releases, store clients, admin tools, other engines. Managing them needs the
 // admin:tokens scope (sign in with --scopes admin:read,admin:write,admin:tokens).
 // You cannot grant scopes you do not hold, nor an expiry later than your own;
 // without --expires-at a new token expires with yours, and --expires-at ""
 // means never. create and rotate print the token once, under the record; with
 // -o json it is the plainToken field. rotate replaces a token, and the new one
-// is pushed to the pipelines that use it. delete (alias revoke) ends it; a
+// is pushed to the CI repositories that use it. delete (alias revoke) ends it; a
 // token cannot revoke itself.
 //
 //	warp-engine token list --state active
@@ -453,13 +464,13 @@
 //
 // # WarpEngine Local
 //
-// WarpEngine Local can run a git server and a CI next to the engine. Only
-// WarpEngine Local has the "local" commands; any other server answers 404
-// (exit code 4). "local components" shows the components and their state.
-// "local enable" starts a component and what it needs; "local disable" stops
+// WarpEngine Local can run providers next to the engine: a git server (role
+// scm) and a CI. Only WarpEngine Local has the "local" commands; any other
+// server answers 404 (exit code 4). "local providers" shows the providers and
+// their state. "local enable" starts a provider and what it needs; "local disable" stops
 // it and what needs it, and keeps its data; "local remove" removes its
 // containers, with --purge its data and generated sign-ins too, and asks first.
-// "local credentials" prints a component's generated sign-in, password
+// "local credentials" prints a provider's generated sign-in, password
 // included. "local ci-setup" sets a software (ID or name) up on the local git
 // server and CI, starting them when they are off; its result holds the push
 // URL. "local ci-teardown" stops a software's local CI and keeps its
@@ -467,16 +478,16 @@
 //
 // Enabling, disabling, removing and the CI setup run in the background on the
 // engine. The commands wait for them: they print each step on standard error
-// as it happens, then the finished operation. A failed operation is an error
+// as it happens, then the finished task. A failed task is an error
 // (exit code 1), and so is one that has not finished within --timeout (default
-// 10m); it goes on running on the engine. --no-wait prints the queued operation
-// at once, and "local operation ID --wait" follows it later.
+// 10m); it goes on running on the engine. --no-wait prints the queued task
+// at once, and "local task ID --wait" follows it later.
 //
-//	warp-engine local components
+//	warp-engine local providers
 //	warp-engine local enable woodpecker
 //	warp-engine local ci-setup my-game
 //	warp-engine local enable gitea --no-wait -o id
-//	warp-engine local operation 12 --wait
+//	warp-engine local task 12 --wait
 //	warp-engine local remove woodpecker --purge --yes
 //
 // # Checking a Makefile

@@ -3,7 +3,7 @@
 #
 #   curl -fsSL https://git.teletypegames.org/engines/warp-engine-cli/raw/branch/master/install.sh | sh
 #
-# VERSION      release tag, e.g. v0.1.0 (default: the latest)
+# VERSION      release tag, e.g. v1.0.0 (default: the latest)
 # INSTALL_DIR  default ~/.local/bin
 set -eu
 

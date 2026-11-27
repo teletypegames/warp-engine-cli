@@ -15,7 +15,7 @@ import (
 func TestSoftwareStatusRepository_All_SendsFilterAndSort(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_statuses", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_statuses", r.URL.Path)
 		assert.Equal(t, "true", r.URL.Query().Get("defaultVisible"))
 		assert.Equal(t, "-key", r.URL.Query().Get("sort"))
 		io.WriteString(w, `{"data":[{"id":1,"key":"released","label":"Released","position":1,"defaultVisible":true,"badge":null,"softwareCount":4,"createdAt":null,"updatedAt":null}],"meta":{"page":1,"perPage":25,"total":1,"totalPages":1,"nextPage":null}}`)
@@ -34,7 +34,7 @@ func TestSoftwareStatusRepository_All_SendsFilterAndSort(t *testing.T) {
 func TestSoftwareStatusRepository_Create_PostsAttributes(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_statuses", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_statuses", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"key": "beta", "label": "Beta", "defaultVisible": true}, body)
@@ -53,7 +53,7 @@ func TestSoftwareStatusRepository_Create_PostsAttributes(t *testing.T) {
 func TestSoftwareStatusRepository_Destroy_ConflictCarriesTheMessage(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_statuses/2", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_statuses/2", r.URL.Path)
 		w.WriteHeader(http.StatusConflict)
 		io.WriteString(w, `{"error":"still used by 4 softwares"}`)
 	}))

@@ -22,7 +22,7 @@ func (r Router) software(root *cobra.Command) {
 		Use: "show SOFTWARE", Short: "Show a software (by ID or name)", Args: ExactArgs(1, "SOFTWARE"),
 		Example: "  warp-engine software show blessing-of-ra --include releases,images",
 		Flags: func(flags *pflag.FlagSet) {
-			flags.StringSlice("include", nil, "embed related records: releases, images, externalLinks, extras")
+			flags.StringSlice("include", nil, "embed related records: releases, images, links, extras")
 		},
 		Run: r.SoftwareController.Show,
 	})

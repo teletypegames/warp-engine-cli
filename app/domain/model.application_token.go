@@ -44,7 +44,7 @@ type ApplicationTokenModel struct {
 	Sync *ApplicationTokenSyncModel `json:"sync,omitempty"`
 }
 
-// ApplicationTokenSyncModel counts the pipelines a new token was pushed to
+// ApplicationTokenSyncModel counts the CI repositories a new token was pushed to
 // as a CI secret.
 type ApplicationTokenSyncModel struct {
 	// Synced is how many took it.

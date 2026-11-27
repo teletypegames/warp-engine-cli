@@ -88,11 +88,11 @@ func TestDownloadSerializer_StatsToRecord_ReleasesThenFiles(t *testing.T) {
 	}, record)
 }
 
-func TestDownloadSerializer_FlagsToFilter_TakesTheOutletAndClientID(t *testing.T) {
+func TestDownloadSerializer_FlagsToFilter_TakesTheFeedAndClientID(t *testing.T) {
 	serializer := cli.DownloadSerializer{}
 	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	cli.DeclareFilters(flags, serializer.Filters())
-	assert.NoError(t, flags.Parse([]string{"--outlet", "assembly64", "--client-id", "Ultimate"}))
+	assert.NoError(t, flags.Parse([]string{"--feed", "assembly64", "--client-id", "Ultimate"}))
 
-	assert.Equal(t, domain.Filter{"outlet": "assembly64", "clientId": "Ultimate"}, serializer.FlagsToFilter(flags))
+	assert.Equal(t, domain.Filter{"feed": "assembly64", "clientId": "Ultimate"}, serializer.FlagsToFilter(flags))
 }

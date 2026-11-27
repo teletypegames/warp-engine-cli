@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0
+
+For WarpEngine 6.0 and its Admin API v2 (`/api/admin/v2`). It no longer talks to an engine before 6.0.
+
+- `pipeline` is now `ci-repo` (aliases `ci-repos`, `ci-repository`), over the Admin API's `ci_repositories` resource; `list`, `show`, `update`, `sync`, `runs` and `trigger` are unchanged. The runs are still pipeline runs, and the sort key stays `lastPipelineAt`.
+- `outlet list|check` is now `feed list|check`, over `/feeds`; a feed's type is `directory` where it was `shelf`. `download list --outlet` is now `--feed`, and a download shows its feed.
+- `link` handles only the plain links of a software (`/softwares/{id}/links`, `/links/{id}`): `--kind` and `--ref` are gone, and a link has no kind, ref or public flag any more.
+- New `source show|set|delete SOFTWARE`: the source repository of a software, one per software (`GET`/`PUT`/`DELETE /softwares/{id}/source`, body `url` and `ref`), with whether it is public and the last check. It replaces the `link --kind source` of 0.x.
+- `fork` works over `/forks`; a fork's fields are `engineUrl`, `name` and `title` (they were `childEngine`, `childName`, `childTitle`).
+- `local components` is now `local providers` (`/local_providers`), `local operation ID` is now `local task ID` (`/local_tasks`); the git server's role is `scm`.
+- `software create|update --shelf-name` is now `--directory-name` (`directoryName`), and `software show --include` takes `links` instead of `externalLinks`.
+- Asset kinds come from the server, so `package` (the former `cartridge`) needs no change here.
+
 ## 0.4.0
 
 For the Admin API of warp_engine 5.11.0.

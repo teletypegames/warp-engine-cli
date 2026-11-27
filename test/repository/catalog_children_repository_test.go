@@ -34,7 +34,7 @@ func catalogBody(t *testing.T, r *http.Request) map[string]any {
 func TestReleaseRepository_All_SendsFiltersAndSort(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/3/releases", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/releases", r.URL.Path)
 		assert.Equal(t, "beta", r.URL.Query().Get("channel"))
 		assert.Equal(t, "-version", r.URL.Query().Get("sort"))
 		io.WriteString(w, `{"data":[{"id":42,"softwareId":3,"version":"1.0-beta","channel":"beta","commitSha":null,"assets":[]}],"meta":{"page":1,"perPage":25,"total":1,"totalPages":1,"nextPage":null}}`)
@@ -50,7 +50,7 @@ func TestReleaseRepository_All_SendsFiltersAndSort(t *testing.T) {
 func TestReleaseRepository_Create_PostsTheVersion(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/3/releases", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/releases", r.URL.Path)
 		assert.Equal(t, map[string]any{"version": "dev-abc"}, catalogBody(t, r))
 		w.WriteHeader(http.StatusCreated)
 		io.WriteString(w, `{"data":{"id":43,"version":"dev-abc","channel":"dev"}}`)
@@ -65,7 +65,7 @@ func TestReleaseRepository_Create_PostsTheVersion(t *testing.T) {
 func TestReleaseRepository_Destroy_SendsDelete(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
-		assert.Equal(t, "/api/admin/v1/releases/43", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/releases/43", r.URL.Path)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
@@ -74,7 +74,7 @@ func TestReleaseRepository_Destroy_SendsDelete(t *testing.T) {
 
 func TestReleaseAssetRepository_All_ReadsTheUnpagedList(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/releases/42/assets", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/releases/42/assets", r.URL.Path)
 		io.WriteString(w, `{"data":[{"id":7,"releaseId":42,"kind":"html","path":"/p"}]}`)
 	})
 
@@ -87,7 +87,7 @@ func TestReleaseAssetRepository_All_ReadsTheUnpagedList(t *testing.T) {
 func TestReleaseAssetRepository_Update_PatchesTheAsset(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
-		assert.Equal(t, "/api/admin/v1/assets/7", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/assets/7", r.URL.Path)
 		assert.Equal(t, map[string]any{"path": "/q"}, catalogBody(t, r))
 		io.WriteString(w, `{"data":{"id":7,"path":"/q"}}`)
 	})
@@ -98,28 +98,28 @@ func TestReleaseAssetRepository_Update_PatchesTheAsset(t *testing.T) {
 	assert.Equal(t, "/q", asset.Path)
 }
 
-func TestExternalLinkRepository_Create_PostsLabelAndURL(t *testing.T) {
+func TestSoftwareLinkRepository_Create_PostsLabelAndURL(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/3/external_links", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/links", r.URL.Path)
 		assert.Equal(t, map[string]any{"label": "Source", "url": "https://x"}, catalogBody(t, r))
 		w.WriteHeader(http.StatusCreated)
 		io.WriteString(w, `{"data":{"id":2,"softwareId":3,"label":"Source","url":"https://x"}}`)
 	})
 
-	link, err := domain.ExternalLinkRepository{Client: client}.Create(3, domain.Attributes{"label": "Source", "url": "https://x"})
+	link, err := domain.SoftwareLinkRepository{Client: client}.Create(3, domain.Attributes{"label": "Source", "url": "https://x"})
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, link.ID)
 }
 
-func TestExternalLinkRepository_FindByID_GetsTheLink(t *testing.T) {
+func TestSoftwareLinkRepository_FindByID_GetsTheLink(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/external_links/2", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/links/2", r.URL.Path)
 		io.WriteString(w, `{"data":{"id":2,"label":"Source"}}`)
 	})
 
-	link, err := domain.ExternalLinkRepository{Client: client}.FindByID(2)
+	link, err := domain.SoftwareLinkRepository{Client: client}.FindByID(2)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Source", link.Label)
@@ -130,7 +130,7 @@ func TestSoftwareImageRepository_Upload_SendsMultipart(t *testing.T) {
 	assert.NoError(t, os.WriteFile(file_path, []byte("PNGDATA"), 0o600))
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/3/images/upload", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/images/upload", r.URL.Path)
 		assert.NoError(t, r.ParseMultipartForm(1<<20))
 		assert.Equal(t, "true", r.FormValue("isDefault"))
 		assert.Equal(t, "2", r.FormValue("position"))
@@ -152,7 +152,7 @@ func TestSoftwareImageRepository_Upload_SendsMultipart(t *testing.T) {
 
 func TestSoftwareImageRepository_Create_PostsTheImageID(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/softwares/3/images", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/images", r.URL.Path)
 		assert.Equal(t, map[string]any{"imageId": float64(118)}, catalogBody(t, r))
 		w.WriteHeader(http.StatusCreated)
 		io.WriteString(w, `{"data":{"id":31,"imageId":118}}`)
@@ -167,7 +167,7 @@ func TestSoftwareImageRepository_Create_PostsTheImageID(t *testing.T) {
 func TestSoftwareImageRepository_Destroy_SendsDelete(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_images/31", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_images/31", r.URL.Path)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
@@ -177,7 +177,7 @@ func TestSoftwareImageRepository_Destroy_SendsDelete(t *testing.T) {
 func TestExtraRepository_Update_PatchesTheValue(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/3/extras/seo_metadata", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/extras/seo_metadata", r.URL.Path)
 		assert.Equal(t, map[string]any{"value": map[string]any{"title": "Pong"}}, catalogBody(t, r))
 		io.WriteString(w, `{"data":{"association":"seo_metadata","multiple":false,"value":{"title":"Pong"}}}`)
 	})
@@ -191,7 +191,7 @@ func TestExtraRepository_Update_PatchesTheValue(t *testing.T) {
 
 func TestExtraRepository_Find_MissingResourceIs404(t *testing.T) {
 	client := catalogServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/softwares/3/extras/seo_metadata", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/3/extras/seo_metadata", r.URL.Path)
 		w.WriteHeader(http.StatusNotFound)
 		io.WriteString(w, `{"error":"Not found"}`)
 	})

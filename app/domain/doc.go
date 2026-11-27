@@ -21,7 +21,7 @@
 //     Destroy plus the domain actions. A service checks what would only cost
 //     a round trip (a required field, an empty update), resolves references
 //     and runs the flows that take more than one request: a device sign-in,
-//     waiting for a WarpEngine Local operation.
+//     waiting for a WarpEngine Local task.
 //
 // A controller of package cli calls services, a service calls repositories,
 // a repository calls the client; nothing skips a layer, and every dependency

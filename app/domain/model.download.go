@@ -16,9 +16,9 @@ type DownloadModel struct {
 	UserAgent *string `json:"userAgent"`
 	// Referer is the client's Referer header, or nil.
 	Referer *string `json:"referer"`
-	// Outlet is the key of the outlet it came through, or nil for the
+	// Feed is the key of the feed it came through, or nil for the
 	// catalog API.
-	Outlet *string `json:"outlet"`
+	Feed *string `json:"feed"`
 	// ClientID is the client's Client-Id header, or nil.
 	ClientID *string `json:"clientId"`
 	// CreatedAt is when it was downloaded (RFC 3339), or nil.

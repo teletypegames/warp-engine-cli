@@ -118,12 +118,12 @@ func TestSoftwareService_Scaffold_ChecksTheApp(t *testing.T) {
 	assert.Equal(t, "cli", got["app"])
 }
 
-func TestPipelineService_Update_TakesUnknownBesidesThePlatforms(t *testing.T) {
+func TestCiRepositoryService_Update_TakesUnknownBesidesThePlatforms(t *testing.T) {
 	platforms := &mocksvc.MockBuildPlatformService{CheckPlatformFunc: func(value string, extra ...string) error {
-		assert.Equal(t, []string{domain.PipelineUnknownPlatform}, extra)
+		assert.Equal(t, []string{domain.CiRepositoryUnknownPlatform}, extra)
 		return nil
 	}}
-	svc := domain.PipelineService{PipelineRepository: &mockrepo.MockPipelineRepository{}, BuildPlatformService: platforms}
+	svc := domain.CiRepositoryService{CiRepositoryRepository: &mockrepo.MockCiRepositoryRepository{}, BuildPlatformService: platforms}
 
 	_, err := svc.Update(4, domain.Attributes{"platform": "unknown"})
 

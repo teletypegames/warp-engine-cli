@@ -15,7 +15,7 @@ type SoftwareServiceInterface interface {
 	Update(reference string, attributes Attributes) (*SoftwareModel, error)
 	// Destroy deletes the software reference.
 	Destroy(reference string) error
-	// Scaffold creates a software with its forge repository and pipeline.
+	// Scaffold creates a software with its forge repository and CI repository.
 	Scaffold(attributes Attributes) (*ScaffoldModel, error)
 }
 

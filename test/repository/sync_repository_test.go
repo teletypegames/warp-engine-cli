@@ -44,7 +44,7 @@ func TestSyncPeerRepository_All_SendsFilters(t *testing.T) {
 	page, err := repo.All(domain.Filter{"outboundEnabled": "true", "transport": "http"}, domain.ListQuery{Sort: "label"})
 
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/sync_peers", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers", seen.path)
 	assert.Equal(t, "outboundEnabled=true&sort=label&transport=http", seen.query)
 	assert.Equal(t, "h", page.Items[0].TransportOptions["host"])
 }
@@ -59,7 +59,7 @@ func TestSyncPeerRepository_Create_PostsAttributes(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, seen.method)
-	assert.Equal(t, "/api/admin/v1/sync_peers", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers", seen.path)
 	assert.Equal(t, map[string]any{"label": "mirror", "transportOptions": map[string]any{"host": "m"}}, seen.body)
 	assert.Equal(t, []string{"stable"}, peer.AllowedChannels)
 }
@@ -72,24 +72,24 @@ func TestSyncPeerRepository_Actions_HitTheirPaths(t *testing.T) {
 
 	check, err := repo.Check(3)
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/sync_peers/3/check", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers/3/check", seen.path)
 	assert.True(t, check.OK)
 
 	token, err := repo.InboundToken(3)
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/sync_peers/3/inbound_token", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers/3/inbound_token", seen.path)
 	assert.Equal(t, "ab-whole", token.PlainToken)
 
 	push, err := repo.Push(3, domain.Attributes{"dryRun": true})
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, seen.method)
-	assert.Equal(t, "/api/admin/v1/sync_peers/3/push", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers/3/push", seen.path)
 	assert.Equal(t, map[string]any{"dryRun": true}, seen.body)
 	assert.Equal(t, "pong", push.Releases[0].Software)
 
 	_, err = repo.Run(domain.Attributes{"peerIds": []int{3, 5}})
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/sync_peers/run", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers/run", seen.path)
 	assert.Equal(t, map[string]any{"peerIds": []any{float64(3), float64(5)}}, seen.body)
 }
 
@@ -103,7 +103,7 @@ func TestSyncPeerRepository_Destroy_SendsDelete(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodDelete, seen.method)
-	assert.Equal(t, "/api/admin/v1/sync_peers/3", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_peers/3", seen.path)
 }
 
 func TestSyncPairingRepository_TokenAndUpdate(t *testing.T) {
@@ -115,13 +115,13 @@ func TestSyncPairingRepository_TokenAndUpdate(t *testing.T) {
 	pairing, err := repo.Token(2)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, seen.method)
-	assert.Equal(t, "/api/admin/v1/sync_pairings/2/token", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_pairings/2/token", seen.path)
 	assert.Equal(t, "9f-whole", *pairing.PlainToken)
 
 	_, err = repo.Update(2, domain.Attributes{"label": "desk"})
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPatch, seen.method)
-	assert.Equal(t, "/api/admin/v1/sync_pairings/2", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_pairings/2", seen.path)
 	assert.Equal(t, map[string]any{"label": "desk"}, seen.body)
 }
 
@@ -145,12 +145,12 @@ func TestSyncEventRepository_SoftwareViews(t *testing.T) {
 
 	states, err := repo.Status(12)
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/softwares/12/sync_status", seen.path)
+	assert.Equal(t, "/api/admin/v2/softwares/12/sync_status", seen.path)
 	assert.Equal(t, "succeeded", states[0].Event.Status)
 
 	_, err = repo.AllOfSoftware(12, "inbound")
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/softwares/12/sync_events", seen.path)
+	assert.Equal(t, "/api/admin/v2/softwares/12/sync_events", seen.path)
 	assert.Equal(t, "direction=inbound", seen.query)
 
 	_, err = repo.AllOfSoftware(12, "")
@@ -167,7 +167,7 @@ func TestSyncEventRepository_FindByID(t *testing.T) {
 	event, err := repo.FindByID(9)
 
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/sync_events/9", seen.path)
+	assert.Equal(t, "/api/admin/v2/sync_events/9", seen.path)
 	assert.Equal(t, int64(1024), *event.Bytes)
 }
 
@@ -180,14 +180,14 @@ func TestApplicationTokenRepository_CreateAndRotate(t *testing.T) {
 	token, err := repo.Create(domain.Attributes{"name": "ci", "scopes": []string{"admin:read"}, "expiresAt": nil})
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, seen.method)
-	assert.Equal(t, "/api/admin/v1/application_tokens", seen.path)
+	assert.Equal(t, "/api/admin/v2/application_tokens", seen.path)
 	assert.Equal(t, map[string]any{"name": "ci", "scopes": []any{"admin:read"}, "expiresAt": nil}, seen.body)
 	assert.Equal(t, "aa-whole", *token.PlainToken)
 	assert.Equal(t, 1, token.Sync.Synced)
 
 	_, err = repo.Rotate(5)
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/application_tokens/5/rotate", seen.path)
+	assert.Equal(t, "/api/admin/v2/application_tokens/5/rotate", seen.path)
 }
 
 func TestApplicationTokenRepository_All_SendsFilters(t *testing.T) {
@@ -199,7 +199,7 @@ func TestApplicationTokenRepository_All_SendsFilters(t *testing.T) {
 	page, err := repo.All(domain.Filter{"kind": "admin", "state": ""}, domain.ListQuery{})
 
 	assert.NoError(t, err)
-	assert.Equal(t, "/api/admin/v1/application_tokens", seen.path)
+	assert.Equal(t, "/api/admin/v2/application_tokens", seen.path)
 	assert.Equal(t, "kind=admin", seen.query)
 	assert.Empty(t, page.Items)
 }
@@ -213,6 +213,6 @@ func TestApplicationTokenRepository_Destroy_SelfIs409(t *testing.T) {
 	err := repo.Destroy(1)
 
 	assert.Equal(t, http.MethodDelete, seen.method)
-	assert.Equal(t, "/api/admin/v1/application_tokens/1", seen.path)
+	assert.Equal(t, "/api/admin/v2/application_tokens/1", seen.path)
 	assert.Equal(t, http.StatusConflict, api.StatusOf(err))
 }

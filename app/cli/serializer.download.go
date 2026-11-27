@@ -24,7 +24,7 @@ func (s DownloadSerializer) Filters() []FilterFlag {
 		{Flag: "ip-address", Key: "ipAddress", Usage: "IP address contains"},
 		{Flag: "user-agent", Key: "userAgent", Usage: "User-Agent contains"},
 		{Flag: "referer", Key: "referer", Usage: "Referer contains"},
-		{Flag: "outlet", Key: "outlet", Usage: "the outlet it came through, exactly; none for the catalog API"},
+		{Flag: "feed", Key: "feed", Usage: "the feed it came through, exactly; none for the catalog API"},
 		{Flag: "client-id", Key: "clientId", Usage: "Client-Id contains"},
 		{Flag: "from", Key: "from", Usage: "downloaded at or after: 2026-11-01T12:00:00Z, or 2026-11-01 for its midnight UTC"},
 		{Flag: "to", Key: "to", Usage: "downloaded before: an ISO 8601 time, or a date for its midnight UTC"},
@@ -68,7 +68,7 @@ func (s DownloadSerializer) ModelToRecord(download domain.DownloadModel) Record 
 		{Name: "IP address", Value: Text(download.IPAddress)},
 		{Name: "User-Agent", Value: Text(download.UserAgent)},
 		{Name: "Referer", Value: Text(download.Referer)},
-		{Name: "Outlet", Value: Text(download.Outlet)},
+		{Name: "Feed", Value: Text(download.Feed)},
 		{Name: "Client-Id", Value: Text(download.ClientID)},
 	}
 }

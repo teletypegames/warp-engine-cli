@@ -24,7 +24,7 @@ type RawRepository struct {
 
 // Send sends the request. A path under /api/ or /.well-known/ is taken from
 // the server's root; any other path is relative to the Admin API
-// ([api.AdminPrefix]), so "/softwares" means /api/admin/v1/softwares.
+// ([api.AdminPrefix]), so "/softwares" means /api/admin/v2/softwares.
 func (r RawRepository) Send(method string, path string, query url.Values, body any) (json.RawMessage, error) {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path

@@ -14,7 +14,7 @@ import (
 
 func TestPlatformLinkRepository_All_SendsPlatform(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/platform_links", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/platform_links", r.URL.Path)
 		assert.Equal(t, "c64", r.URL.Query().Get("platform"))
 		io.WriteString(w, `{"data":[{"id":3,"platform":"c64","name":"VICE","url":"https://vice.example.org","position":0}],"meta":{"page":1,"perPage":25,"total":1,"totalPages":1,"nextPage":null}}`)
 	}))
@@ -30,7 +30,7 @@ func TestPlatformLinkRepository_All_SendsPlatform(t *testing.T) {
 func TestPlatformLinkRepository_Create_PostsAttributes(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/platform_links", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/platform_links", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"platform": "c64", "name": "VICE", "url": "https://vice.example.org"}, body)
@@ -49,7 +49,7 @@ func TestPlatformLinkRepository_Create_PostsAttributes(t *testing.T) {
 func TestPlatformLinkRepository_Destroy_SendsDelete(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
-		assert.Equal(t, "/api/admin/v1/platform_links/3", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/platform_links/3", r.URL.Path)
 		w.WriteHeader(http.StatusNoContent)
 	}))
 	defer server.Close()

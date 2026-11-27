@@ -55,10 +55,12 @@ type Router struct {
 	ReleaseController ReleaseControllerInterface
 	// ReleaseAssetController: asset list|show|create|update|delete.
 	ReleaseAssetController ReleaseAssetControllerInterface
-	// ExternalLinkController: link list|show|create|update|delete.
-	ExternalLinkController ExternalLinkControllerInterface
-	// ForkLinkController: fork list|show|update|delete.
-	ForkLinkController ForkLinkControllerInterface
+	// SoftwareLinkController: link list|show|create|update|delete.
+	// SoftwareSourceController: source show|set|delete.
+	SoftwareSourceController SoftwareSourceControllerInterface
+	SoftwareLinkController   SoftwareLinkControllerInterface
+	// SoftwareForkController: fork list|show|update|delete.
+	SoftwareForkController SoftwareForkControllerInterface
 	// SoftwareImageController: image list|show|create|upload|update|delete.
 	SoftwareImageController SoftwareImageControllerInterface
 	// ExtraController: extra show|update.
@@ -71,19 +73,19 @@ type Router struct {
 	PlatformLinkController PlatformLinkControllerInterface
 	// DownloadController: download list|show|summary|top-files|top-softwares|stats.
 	DownloadController DownloadControllerInterface
-	// OutletController: outlet list|check.
-	OutletController OutletControllerInterface
-	// PipelineController: pipeline list|show|update|sync|runs|trigger.
-	PipelineController PipelineControllerInterface
+	// FeedController: feed list|check.
+	FeedController FeedControllerInterface
+	// CiRepositoryController: ci-repo list|show|update|sync|runs|trigger.
+	CiRepositoryController CiRepositoryControllerInterface
 	// FileController: file list|upload|rename|delete|mkdir.
 	FileController FileControllerInterface
 	// RuntimeController: runtime list|show|install.
 	RuntimeController RuntimeControllerInterface
-	// LocalComponentController: local components|enable|disable|remove|credentials|ci-setup|ci-teardown.
-	LocalComponentController LocalComponentControllerInterface
-	// LocalOperationController: local operation (added only with the
-	// LocalComponentController).
-	LocalOperationController LocalOperationControllerInterface
+	// LocalProviderController: local providers|enable|disable|remove|credentials|ci-setup|ci-teardown.
+	LocalProviderController LocalProviderControllerInterface
+	// LocalTaskController: local task (added only with the
+	// LocalProviderController).
+	LocalTaskController LocalTaskControllerInterface
 	// SyncPeerController: peer list|show|create|update|delete|check|inbound-token|push|run.
 	SyncPeerController SyncPeerControllerInterface
 	// SyncPairingController: pairing list|show|create|update|delete|token.
@@ -150,11 +152,14 @@ func (r Router) Init() *cobra.Command {
 	if r.ReleaseAssetController != nil {
 		r.releaseAsset(root)
 	}
-	if r.ExternalLinkController != nil {
-		r.externalLink(root)
+	if r.SoftwareLinkController != nil {
+		r.softwareLink(root)
 	}
-	if r.ForkLinkController != nil {
-		r.forkLink(root)
+	if r.SoftwareSourceController != nil {
+		r.softwareSource(root)
+	}
+	if r.SoftwareForkController != nil {
+		r.softwareFork(root)
 	}
 	if r.SoftwareImageController != nil {
 		r.softwareImage(root)
@@ -174,11 +179,11 @@ func (r Router) Init() *cobra.Command {
 	if r.DownloadController != nil {
 		r.download(root)
 	}
-	if r.OutletController != nil {
-		r.outlet(root)
+	if r.FeedController != nil {
+		r.feed(root)
 	}
-	if r.PipelineController != nil {
-		r.pipeline(root)
+	if r.CiRepositoryController != nil {
+		r.ciRepository(root)
 	}
 	if r.FileController != nil {
 		r.file(root)
@@ -186,8 +191,8 @@ func (r Router) Init() *cobra.Command {
 	if r.RuntimeController != nil {
 		r.runtime(root)
 	}
-	if r.LocalComponentController != nil {
-		r.localComponent(root)
+	if r.LocalProviderController != nil {
+		r.localProvider(root)
 	}
 	if r.SyncPeerController != nil {
 		r.syncPeer(root)
@@ -280,9 +285,9 @@ func isOffline(cmd *cobra.Command) bool {
 
 // rootHelp is the long help of the root command.
 const rootHelp = `warp-engine manages a WarpEngine server through its Admin API: the catalog
-(softwares, releases, files, images, links), its vocabulary, the pipelines,
-the artifact store, the runtimes, the downloads, sync with other engines, the
-application tokens and the components of WarpEngine Local.
+(softwares, releases, files, images, links, sources), its vocabulary, the CI
+repositories, the artifact store, the runtimes, the downloads, the feeds, sync
+with other engines, the application tokens and the providers of WarpEngine Local.
 
 Start by signing in; the server becomes the current profile:
 

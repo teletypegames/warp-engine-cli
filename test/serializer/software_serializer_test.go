@@ -20,12 +20,12 @@ func parse(t *testing.T, fields []cli.FieldFlag, args ...string) *pflag.FlagSet 
 
 func TestSoftwareSerializer_RequestToAttributes_OnlyChangedFlags(t *testing.T) {
 	serializer := cli.SoftwareSerializer{}
-	flags := parse(t, serializer.Fields(), "--title", "Pong", "--shelf-name", "PONG")
+	flags := parse(t, serializer.Fields(), "--title", "Pong", "--directory-name", "PONG")
 
 	attributes, err := serializer.RequestToAttributes(flags)
 
 	assert.NoError(t, err)
-	assert.Equal(t, domain.Attributes{"title": "Pong", "shelfName": "PONG"}, attributes)
+	assert.Equal(t, domain.Attributes{"title": "Pong", "directoryName": "PONG"}, attributes)
 }
 
 func TestSoftwareSerializer_RequestToAttributes_DataIsMergedUnderFlags(t *testing.T) {

@@ -18,7 +18,7 @@ type SoftwareControllerInterface interface {
 	Update(cmd *cobra.Command, args []string) error
 	// Destroy deletes a software.
 	Destroy(cmd *cobra.Command, args []string) error
-	// Scaffold sets a new software up with its repository and pipeline.
+	// Scaffold sets a new software up with its repository and CI repository.
 	Scaffold(cmd *cobra.Command, args []string) error
 }
 
@@ -45,7 +45,7 @@ func (c SoftwareController) Index(cmd *cobra.Command, args []string) error {
 }
 
 // Show prints the software SOFTWARE (an ID or a name); --include embeds
-// its releases, images, external links or extras.
+// its releases, images, links or extras.
 func (c SoftwareController) Show(cmd *cobra.Command, args []string) error {
 	include, _ := cmd.Flags().GetStringSlice("include")
 	software, err := c.SoftwareService.Show(args[0], include)

@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 warp-engine-cli: the command line of a WarpEngine server, over its Admin API
-(`/api/admin/v1`) and its sign-in endpoints. Go module
+(`/api/admin/v2`, WarpEngine 6) and its sign-in endpoints. Go module
 `git.teletypegames.org/engines/warp-engine-cli`, binary `warp-engine`
 (`cmd/warp-engine`). The documentation lives in the source: the package
 comments are the manual and the doc comments the reference. Every release tag
@@ -9,7 +9,7 @@ publishes it to https://wiki.teletypegames.org/godoc/warp-engine-cli/latest/cmd/
 `README.md` only installs and links there.
 
 The Admin API's contract is its OpenAPI document,
-`GET <server>/api/admin/v1/openapi.json` (needs a token; WarpEngine Local's is
+`GET <server>/api/admin/v2/openapi.json` (needs a token; WarpEngine Local's is
 in `~/.warpengine/local-token`). The engine's source is
 `services/teletypegames/libs/ruby/warp_engine/lib/warp_engine/admin_api/definitions/`
 in the TTG workspace.

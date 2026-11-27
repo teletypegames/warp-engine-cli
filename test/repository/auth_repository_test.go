@@ -99,5 +99,5 @@ func TestRawRepository_Send_PathRouting(t *testing.T) {
 		assert.NoError(t, err)
 	}
 
-	assert.Equal(t, []string{"/api/admin/v1/softwares", "/api/admin/v1/me", "/api/auth/device", "/.well-known/warp-engine"}, paths)
+	assert.Equal(t, []string{"/api/admin/v2/softwares", "/api/admin/v2/me", "/api/auth/device", "/.well-known/warp-engine"}, paths)
 }

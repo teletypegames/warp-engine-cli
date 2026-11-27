@@ -17,7 +17,7 @@ var ErrNoServer = errors.New("no server: sign in with \"warp-engine login <url>\
 
 // Error is an answer of the server outside 2xx.
 type Error struct {
-	// Method and Path are the request that failed ("PATCH", "/api/admin/v1/softwares/3").
+	// Method and Path are the request that failed ("PATCH", "/api/admin/v2/softwares/3").
 	Method string
 	// Path is the path of the request, without the query.
 	Path string

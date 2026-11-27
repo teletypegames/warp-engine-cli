@@ -1,7 +1,7 @@
 # warp-engine-cli
 
 `warp-engine`, the command line of a [WarpEngine](https://wiki.teletypegames.org/engines/warp-engine)
-server. It drives the whole Admin API from a terminal or a script: the catalog
+server (WarpEngine 6, Admin API v2). It drives the whole Admin API from a terminal or a script: the catalog
 (softwares, releases, files, images, links, announced forks), its vocabulary, pipelines, the
 artifact store, runtimes, downloads, outlets, sync with other engines, application
 tokens and the components of WarpEngine Local. Every list pages or reads
@@ -29,7 +29,7 @@ irm https://git.teletypegames.org/engines/warp-engine-cli/raw/branch/master/inst
 
 The installer downloads the latest release binary for your system, checks it
 against `SHA256SUMS` and puts it in `~/.local/bin` (Windows:
-`%LOCALAPPDATA%\Programs\warp-engine`, added to your PATH). `VERSION=v0.1.0`
+`%LOCALAPPDATA%\Programs\warp-engine`, added to your PATH). `VERSION=v1.0.0`
 picks a release, `INSTALL_DIR=…` another directory. With Go installed:
 `go install git.teletypegames.org/engines/warp-engine-cli/cmd/warp-engine@latest`.
 

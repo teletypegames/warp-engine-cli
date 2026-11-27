@@ -43,7 +43,7 @@ func (s SoftwareSerializer) Fields() []FieldFlag {
 		{Flag: "status", Key: "status", Kind: KindNullable, Usage: "a status key (see \"status list\")"},
 		{Flag: "category", Key: "category", Kind: KindNullable, Usage: "a category key; a new word is registered for review"},
 		{Flag: "highlighted", Key: "highlighted", Kind: KindBool, Usage: "show it first in the stores"},
-		{Flag: "shelf-name", Key: "shelfName", Kind: KindNullable, Usage: "file name on a shelf (A-Z, 0-9, -)"},
+		{Flag: "directory-name", Key: "directoryName", Kind: KindNullable, Usage: "file name in a directory feed (A-Z, 0-9, -)"},
 		{Flag: "forks-allowed", Key: "forksAllowed", Kind: KindBool, Usage: "let the developer tools offer a fork (needs a public source link)"},
 		{Flag: "fork-of-engine", Key: "forkOfEngine", Kind: KindNullable, Usage: "for a fork: the parent engine's base URL"},
 		{Flag: "fork-of-name", Key: "forkOfName", Kind: KindNullable, Usage: "for a fork: the parent's name on its engine"},
@@ -137,7 +137,7 @@ func (s SoftwareSerializer) ModelToRecord(software domain.SoftwareModel) Record 
 		{Name: "Status", Value: Text(software.Status)},
 		{Name: "Category", Value: Text(software.Category)},
 		{Name: "Highlighted", Value: Flag(software.Highlighted)},
-		{Name: "Shelf name", Value: Text(software.ShelfName)},
+		{Name: "Directory name", Value: Text(software.DirectoryName)},
 		{Name: "Forks allowed", Value: YesNo(software.ForksAllowed)},
 		{Name: "Fork of engine", Value: Text(software.ForkOfEngine)},
 		{Name: "Fork of name", Value: Text(software.ForkOfName)},
@@ -159,7 +159,7 @@ func (s SoftwareSerializer) ModelToRecord(software domain.SoftwareModel) Record 
 		}
 		record = append(record, Field{Name: "Image", Value: value})
 	}
-	for _, link := range software.ExternalLinks {
+	for _, link := range software.Links {
 		record = append(record, Field{Name: "Link", Value: link.Label + ": " + link.URL})
 	}
 	keys := make([]string, 0, len(software.Extras))
@@ -174,14 +174,14 @@ func (s SoftwareSerializer) ModelToRecord(software domain.SoftwareModel) Record 
 }
 
 // ScaffoldToRecord renders the answer of a scaffold: the software, the
-// repository's URLs, the pipeline and the warnings.
+// repository's URLs, the CI repository and the warnings.
 func (s SoftwareSerializer) ScaffoldToRecord(scaffold domain.ScaffoldModel) Record {
 	record := Record{
 		{Name: "ID", Value: strconv.Itoa(scaffold.Software.ID)},
 		{Name: "Name", Value: scaffold.Software.Name},
 		{Name: "Title", Value: scaffold.Software.Title},
 		{Name: "Platform", Value: scaffold.Software.Platform},
-		{Name: "Pipeline", Value: Number(scaffold.PipelineID)},
+		{Name: "CI repository", Value: Number(scaffold.CiRepositoryID)},
 	}
 	for _, key := range []string{"htmlUrl", "cloneUrl", "sshUrl", "fullName"} {
 		if value, ok := scaffold.Repository[key]; ok {

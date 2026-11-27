@@ -14,7 +14,7 @@ import (
 
 func TestRuntimeRepository_All_SendsName(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/runtimes", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/runtimes", r.URL.Path)
 		assert.Equal(t, "emulatorjs", r.URL.Query().Get("name"))
 		io.WriteString(w, `{"data":[{"id":1,"name":"emulatorjs","sizeBytes":10380000,"components":[{"kind":"core","key":"vice_x64sc"}]}],"meta":{"page":1,"perPage":25,"total":1,"totalPages":1,"nextPage":null}}`)
 	}))
@@ -29,7 +29,7 @@ func TestRuntimeRepository_All_SendsName(t *testing.T) {
 
 func TestRuntimeRepository_FindByID_GetsOne(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/runtimes/3", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/runtimes/3", r.URL.Path)
 		io.WriteString(w, `{"data":{"id":3,"version":"4.2.3"}}`)
 	}))
 	defer server.Close()
@@ -44,7 +44,7 @@ func TestRuntimeRepository_FindByID_GetsOne(t *testing.T) {
 func TestRuntimeRepository_Install_PostsBody(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/runtimes/install", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/runtimes/install", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"name": "tic80", "dryRun": true}, body)

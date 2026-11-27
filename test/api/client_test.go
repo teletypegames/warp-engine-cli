@@ -67,7 +67,7 @@ func TestClient_Upload_SendsMultipart(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "shot.png")
 	assert.NoError(t, os.WriteFile(path, []byte("PNG"), 0o600))
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files", r.URL.Path)
 		assert.NoError(t, r.ParseMultipartForm(1<<20))
 		assert.Equal(t, "games", r.FormValue("dir"))
 		file, header, err := r.FormFile("file")

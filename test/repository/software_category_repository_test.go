@@ -14,7 +14,7 @@ import (
 
 func TestSoftwareCategoryRepository_All_SendsNeedsReview(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/software_categories", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_categories", r.URL.Path)
 		assert.Equal(t, "true", r.URL.Query().Get("needsReview"))
 		io.WriteString(w, `{"data":[{"id":5,"key":"puzzle","label":"Puzzle","position":3,"needsReview":true,"softwareCount":1}],"meta":{"page":1,"perPage":25,"total":1,"totalPages":1,"nextPage":null}}`)
 	}))
@@ -30,7 +30,7 @@ func TestSoftwareCategoryRepository_All_SendsNeedsReview(t *testing.T) {
 func TestSoftwareCategoryRepository_Update_SendsPatch(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_categories/5", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_categories/5", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"needsReview": false}, body)
@@ -48,7 +48,7 @@ func TestSoftwareCategoryRepository_Update_SendsPatch(t *testing.T) {
 func TestSoftwareCategoryRepository_FindByID_GetsThePath(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/api/admin/v1/software_categories/5", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/software_categories/5", r.URL.Path)
 		io.WriteString(w, `{"data":{"id":5,"key":"puzzle"}}`)
 	}))
 	defer server.Close()

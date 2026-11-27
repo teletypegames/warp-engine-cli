@@ -16,7 +16,7 @@ import (
 
 // AdminPrefix is the path the Admin API is mounted at on every WarpEngine
 // server; [Client.Admin] puts it in front of the paths it is given.
-const AdminPrefix = "/api/admin/v1"
+const AdminPrefix = "/api/admin/v2"
 
 // DefaultTimeout is how long one request may take, the transfer included,
 // before [New] gives up on it. An upload of a large file may need more: set

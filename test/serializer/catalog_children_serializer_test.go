@@ -66,21 +66,21 @@ func TestReleaseAssetSerializer_RequestToAttributes_PassesAnyKind(t *testing.T) 
 	assert.Equal(t, domain.Attributes{"kind": "cli_linux_x64"}, attributes)
 }
 
-func TestExternalLinkSerializer_ModelToTable_MapsFields(t *testing.T) {
-	table := cli.ExternalLinkSerializer{}.ModelToTable([]domain.ExternalLinkModel{{ID: 2, Kind: "link", Label: "Source", URL: "https://x"}})
+func TestSoftwareLinkSerializer_ModelToTable_MapsFields(t *testing.T) {
+	table := cli.SoftwareLinkSerializer{}.ModelToTable([]domain.SoftwareLinkModel{{ID: 2, Label: "Store", URL: "https://x"}})
 
-	assert.Equal(t, []string{"2", "link", "Source", "https://x", "-", "-"}, table.Rows[0])
+	assert.Equal(t, []string{"2", "Store", "https://x"}, table.Rows[0])
 }
 
-func TestExternalLinkSerializer_ModelToTable_Empty(t *testing.T) {
-	table := cli.ExternalLinkSerializer{}.ModelToTable(nil)
+func TestSoftwareLinkSerializer_ModelToTable_Empty(t *testing.T) {
+	table := cli.SoftwareLinkSerializer{}.ModelToTable(nil)
 
 	assert.Empty(t, table.Rows)
 	assert.NotEmpty(t, table.Headers)
 }
 
-func TestExternalLinkSerializer_ModelToRecord_IDFirst(t *testing.T) {
-	record := cli.ExternalLinkSerializer{}.ModelToRecord(domain.ExternalLinkModel{ID: 2})
+func TestSoftwareLinkSerializer_ModelToRecord_IDFirst(t *testing.T) {
+	record := cli.SoftwareLinkSerializer{}.ModelToRecord(domain.SoftwareLinkModel{ID: 2})
 
 	assert.Equal(t, cli.Field{Name: "ID", Value: "2"}, record[0])
 }

@@ -25,8 +25,8 @@ type SoftwareModel struct {
 	Category *string `json:"category"`
 	// Highlighted marks a software the stores show first, or nil.
 	Highlighted *bool `json:"highlighted"`
-	// ShelfName is the file name on a shelf (A-Z, 0-9, -), or nil to use Name.
-	ShelfName *string `json:"shelfName"`
+	// DirectoryName is the file name in a directory feed (A-Z, 0-9, -), or nil to use Name.
+	DirectoryName *string `json:"directoryName"`
 	// OwnerType is the kind of account that owns it, or nil.
 	OwnerType *string `json:"ownerType"`
 	// OwnerID is the owning account, or nil.
@@ -51,8 +51,8 @@ type SoftwareModel struct {
 	Releases []ReleaseModel `json:"releases,omitempty"`
 	// Images are its images, only with the include "images".
 	Images []SoftwareImageModel `json:"images,omitempty"`
-	// ExternalLinks are its links, only with the include "externalLinks".
-	ExternalLinks []ExternalLinkModel `json:"externalLinks,omitempty"`
+	// Links are its plain links, only with the include "links".
+	Links []SoftwareLinkModel `json:"links,omitempty"`
 	// Extras are the host's additional resources, one key each, only with
 	// the include "extras".
 	Extras map[string]any `json:"extras,omitempty"`
@@ -60,17 +60,17 @@ type SoftwareModel struct {
 
 // SoftwareIncludes are the related records [SoftwareRepository.FindByID] can
 // embed in a software.
-var SoftwareIncludes = []string{"releases", "images", "externalLinks", "extras"}
+var SoftwareIncludes = []string{"releases", "images", "links", "extras"}
 
 // ScaffoldModel is the answer of setting a new software up from nothing:
-// the software, its repository on the forge and its pipeline.
+// the software, its repository on the git server and its CI repository.
 type ScaffoldModel struct {
 	// Software is the created software.
 	Software SoftwareModel `json:"software"`
 	// Repository describes the created forge repository (its URLs and name).
 	Repository map[string]any `json:"repository"`
-	// PipelineID is the CI pipeline set up for it, or nil.
-	PipelineID *int `json:"pipelineId"`
+	// CiRepositoryID is the CI repository set up for it, or nil.
+	CiRepositoryID *int `json:"ciRepositoryId"`
 	// Warnings are the steps that did not fully succeed.
 	Warnings []string `json:"warnings"`
 }

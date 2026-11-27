@@ -25,7 +25,7 @@ type SoftwareRepositoryInterface interface {
 	Update(software_id int, attributes Attributes) (*SoftwareModel, error)
 	// Destroy deletes the software software_id.
 	Destroy(software_id int) error
-	// Scaffold creates a software together with its forge repository and pipeline.
+	// Scaffold creates a software together with its forge repository and CI repository.
 	Scaffold(attributes Attributes) (*ScaffoldModel, error)
 }
 

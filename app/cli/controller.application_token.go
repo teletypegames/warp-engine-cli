@@ -116,7 +116,7 @@ func (c ApplicationTokenController) Destroy(cmd *cobra.Command, args []string) e
 }
 
 // Rotate replaces the token ID after asking (not with --yes): the old one
-// stops working, the new one is pushed to its pipelines and printed once.
+// stops working, the new one is pushed to its CI repositories and printed once.
 func (c ApplicationTokenController) Rotate(cmd *cobra.Command, args []string) error {
 	application_token_id, err := argID("token", args[0])
 	if err != nil {

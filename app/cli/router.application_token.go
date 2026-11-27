@@ -40,7 +40,7 @@ func (r Router) applicationToken(root *cobra.Command) {
 		Flags: DeclareYes, Run: r.ApplicationTokenController.Destroy,
 	})
 	add(token, "", Route{
-		Use: "rotate ID", Short: "Replace a token with a new one (shown once) and push it to its pipelines", Args: ExactArgs(1, "ID"),
+		Use: "rotate ID", Short: "Replace a token with a new one (shown once) and push it to its CI repositories", Args: ExactArgs(1, "ID"),
 		Flags: DeclareYes, Run: r.ApplicationTokenController.Rotate,
 	})
 }

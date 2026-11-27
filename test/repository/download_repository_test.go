@@ -13,7 +13,7 @@ import (
 
 func TestDownloadRepository_All_SendsFiltersAndReadsMeta(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/downloads", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/downloads", r.URL.Path)
 		assert.Equal(t, "pong", r.URL.Query().Get("software"))
 		assert.Equal(t, "2026-11-01", r.URL.Query().Get("from"))
 		assert.Equal(t, "2", r.URL.Query().Get("page"))
@@ -32,7 +32,7 @@ func TestDownloadRepository_All_SendsFiltersAndReadsMeta(t *testing.T) {
 
 func TestDownloadRepository_FindByID_GetsThePath(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/downloads/99", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/downloads/99", r.URL.Path)
 		io.WriteString(w, `{"data":{"id":99,"filePath":"pong.zip"}}`)
 	}))
 	defer server.Close()
@@ -46,7 +46,7 @@ func TestDownloadRepository_FindByID_GetsThePath(t *testing.T) {
 
 func TestDownloadRepository_Summary_ReadsTheCounts(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/downloads/summary", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/downloads/summary", r.URL.Path)
 		io.WriteString(w, `{"data":{"total":100,"today":1,"week":7,"month":30}}`)
 	}))
 	defer server.Close()
@@ -60,7 +60,7 @@ func TestDownloadRepository_Summary_ReadsTheCounts(t *testing.T) {
 
 func TestDownloadRepository_TopFiles_SendsTheLimit(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/downloads/top_files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/downloads/top_files", r.URL.Path)
 		assert.Equal(t, "20", r.URL.Query().Get("limit"))
 		io.WriteString(w, `{"data":[{"filePath":"pong.zip","downloads":17,"lastDownloadAt":"2026-11-19T10:00:00Z"}]}`)
 	}))
@@ -75,7 +75,7 @@ func TestDownloadRepository_TopFiles_SendsTheLimit(t *testing.T) {
 
 func TestDownloadRepository_TopSoftwares_WithoutLimitSendsNone(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/downloads/top_softwares", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/downloads/top_softwares", r.URL.Path)
 		assert.False(t, r.URL.Query().Has("limit"))
 		io.WriteString(w, `{"data":[{"softwareId":7,"name":"pong","title":"Pong","downloads":30}]}`)
 	}))
@@ -90,7 +90,7 @@ func TestDownloadRepository_TopSoftwares_WithoutLimitSendsNone(t *testing.T) {
 
 func TestDownloadRepository_Stats_GetsTheSoftwarePath(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/softwares/7/download_stats", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/7/download_stats", r.URL.Path)
 		io.WriteString(w, `{"data":{"total":30,"releases":[{"releaseId":5,"version":"1.0.0","downloads":30,"files":[{"filePath":"pong.zip","downloads":30,"lastDownloadAt":null}]}]}}`)
 	}))
 	defer server.Close()

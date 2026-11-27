@@ -14,7 +14,7 @@ import (
 
 func TestSoftwareRepository_All_FollowsPagesWithAll(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/softwares", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares", r.URL.Path)
 		assert.Equal(t, "Bearer secret", r.Header.Get("Authorization"))
 		assert.Equal(t, "c64", r.URL.Query().Get("platform"))
 		if r.URL.Query().Get("page") == "2" {
@@ -36,7 +36,7 @@ func TestSoftwareRepository_All_FollowsPagesWithAll(t *testing.T) {
 func TestSoftwareRepository_Update_SendsPatchWithAttributes(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
-		assert.Equal(t, "/api/admin/v1/softwares/5", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/softwares/5", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"title": "New", "author": nil}, body)

@@ -32,9 +32,9 @@ const (
 // list their fields with it, and [DeclareFields] and [FieldsToAttributes]
 // do the rest.
 type FieldFlag struct {
-	// Flag is the flag name, kebab-case ("shelf-name").
+	// Flag is the flag name, kebab-case ("directory-name").
 	Flag string
-	// Key is the API field it sets, camelCase ("shelfName").
+	// Key is the API field it sets, camelCase ("directoryName").
 	Key string
 	// Kind is one of the Kind constants; empty is [KindString].
 	Kind string

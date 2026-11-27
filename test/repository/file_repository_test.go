@@ -17,7 +17,7 @@ import (
 func TestFileRepository_All_SendsDirOnlyWhenSet(t *testing.T) {
 	var queries []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/admin/v1/files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files", r.URL.Path)
 		queries = append(queries, r.URL.RawQuery)
 		io.WriteString(w, `{"data":[{"name":"a.zip","path":"pong/a.zip","type":"file","size":1024,"modifiedAt":null,"downloads":3}]}`)
 	}))
@@ -39,7 +39,7 @@ func TestFileRepository_Upload_SendsMultipart(t *testing.T) {
 	assert.NoError(t, os.WriteFile(local, []byte("PDF"), 0o600))
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files", r.URL.Path)
 		assert.NoError(t, r.ParseMultipartForm(1<<20))
 		assert.Equal(t, "docs", r.FormValue("dir"))
 		file, header, err := r.FormFile("file")
@@ -62,7 +62,7 @@ func TestFileRepository_Upload_SendsMultipart(t *testing.T) {
 func TestFileRepository_Rename_SendsPathAndNewName(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPatch, r.Method)
-		assert.Equal(t, "/api/admin/v1/files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"path": "docs/a.pdf", "newName": "b.pdf"}, body)
@@ -80,7 +80,7 @@ func TestFileRepository_Rename_SendsPathAndNewName(t *testing.T) {
 func TestFileRepository_Destroy_SendsPathQuery(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodDelete, r.Method)
-		assert.Equal(t, "/api/admin/v1/files", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files", r.URL.Path)
 		assert.Equal(t, "docs/a b.pdf", r.URL.Query().Get("path"))
 		w.WriteHeader(http.StatusNoContent)
 	}))
@@ -93,7 +93,7 @@ func TestFileRepository_Destroy_SendsPathQuery(t *testing.T) {
 func TestFileRepository_CreateDirectory_PostsDirAndName(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/admin/v1/files/directories", r.URL.Path)
+		assert.Equal(t, "/api/admin/v2/files/directories", r.URL.Path)
 		body := map[string]any{}
 		assert.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		assert.Equal(t, map[string]any{"dir": "pong", "name": "docs"}, body)

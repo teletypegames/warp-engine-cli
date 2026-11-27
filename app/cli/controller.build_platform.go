@@ -13,9 +13,9 @@ import (
 type BuildPlatformControllerInterface interface {
 	// Platforms completes a --platform.
 	Platforms(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)
-	// PipelinePlatforms completes the --platform of a pipeline: the
-	// platforms and [domain.PipelineUnknownPlatform].
-	PipelinePlatforms(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)
+	// CiRepositoryPlatforms completes the --platform of a CI repository: the
+	// platforms and [domain.CiRepositoryUnknownPlatform].
+	CiRepositoryPlatforms(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)
 	// AssetKinds completes an asset's --kind.
 	AssetKinds(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective)
 	// Apps completes the --app of the --platform given on the same line.
@@ -35,12 +35,12 @@ func (c BuildPlatformController) Platforms(cmd *cobra.Command, args []string, to
 	return completions(c.BuildPlatformService.Platforms(), to_complete)
 }
 
-// PipelinePlatforms returns the server's platforms and "unknown" that
+// CiRepositoryPlatforms returns the server's platforms and "unknown" that
 // start with to_complete.
-func (c BuildPlatformController) PipelinePlatforms(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective) {
+func (c BuildPlatformController) CiRepositoryPlatforms(cmd *cobra.Command, args []string, to_complete string) ([]string, cobra.ShellCompDirective) {
 	platforms := c.BuildPlatformService.Platforms()
 	if platforms != nil {
-		platforms = append(platforms, domain.PipelineUnknownPlatform)
+		platforms = append(platforms, domain.CiRepositoryUnknownPlatform)
 	}
 	return completions(platforms, to_complete)
 }
