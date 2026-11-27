@@ -2,9 +2,9 @@
 
 `warp-engine`, the command line of a [WarpEngine](https://wiki.teletypegames.org/engines/warp-engine)
 server (WarpEngine 6, Admin API v2). It drives the whole Admin API from a terminal or a script: the catalog
-(softwares, releases, files, images, links, announced forks), its vocabulary, pipelines, the
-artifact store, runtimes, downloads, outlets, sync with other engines, application
-tokens and the components of WarpEngine Local. Every list pages or reads
+(softwares, releases, files, images, links, announced forks), its vocabulary, CI repositories, the
+artifact store, runtimes, downloads, feeds, sync with other engines, application
+tokens and the providers of WarpEngine Local. Every list pages or reads
 everything, every command prints a table or, with `-o json`, JSON.
 
 It also releases what the CI cannot build — `warp-engine release upload` and
